@@ -108,6 +108,7 @@ class FeedSearch extends SearchDelegate<FeedData>{
 
   @override
   Widget buildSuggestions(BuildContext context) {
+
     List<FeedData> result = feeditems;
     result = feeditems.where((dat)=>dat.title.toLowerCase().contains(query)? true:false).toList();
 
@@ -119,7 +120,7 @@ class FeedSearch extends SearchDelegate<FeedData>{
     return Container(
       child: ListView(
         children:
-          result.map((data) => FeedTile(data.title, data.guid, data.url))
+          result.map((data) => ListTile(title: Text(data.title), onTap: (){query = data.title;}))
               .toList()
 
       ),
