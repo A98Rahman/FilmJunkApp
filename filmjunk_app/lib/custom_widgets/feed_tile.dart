@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../podcast_details/podcast_details.dart';
-import '../../models/feed_data.dart';
+import '../views/podcast_details/podcast_details.dart';
+import '../models/feed_data.dart';
 
 class FeedTile extends StatelessWidget {
   final String _title;
