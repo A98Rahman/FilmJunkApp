@@ -1,4 +1,4 @@
-import 'file:///C:/Users/a98ra/filmjunk_app/filmjunk_app/lib/custom_widgets/feed_tile.dart';
+import 'package:filmjunk_app/custom_widgets/feed_tile.dart';
 import 'package:filmjunk_app/models/feed_data.dart';
 import 'package:flutter/material.dart';
 import 'package:filmjunk_app/util/style.dart';
