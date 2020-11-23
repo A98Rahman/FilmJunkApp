@@ -8,19 +8,16 @@ import '../models/feed_data.dart';
 import '../network/network_calls.dart';
 import '../global_settings.dart';
 
-class FeedApi{
+class SoundboardApi{
 
-  Future<List<FeedData>> getFeed() async {
-    var response = await networkCalls.getData(UrlConstants.baseUrl);
-    var feed = RssFeed.parse(response);
-    var items = feed.items;
-    var temp = items.map((item) => FeedData.from(item)).toList();
-    return temp;
+  Future<String> getSoundboards() async {
+    var response = await networkCalls.getData(UrlConstants.baseGAPI);
+    // var feed = RssFeed.parse(response);
+    // var items = feed.items;
+    // var temp = items.map((item) => FeedData.from(item)).toList();
+    return response;
     // print('');
   }
 
-  List<RssItem> parseItems(RssFeed ){
-
-  }
 
 }

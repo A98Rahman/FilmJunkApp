@@ -8,7 +8,7 @@ import 'package:webfeed/webfeed.dart';
 import '../models/feed_data.dart';
 
 class NetworkCalls{
-  Future<String> getRssFeed(String url) async{
+  Future<String> getData(String url) async{
     var response = await get(url);
     checkAndThrowError(response);
     return response.body;

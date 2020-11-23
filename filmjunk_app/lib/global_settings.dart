@@ -11,6 +11,6 @@ final networkCalls = NetworkCalls();
 
 abstract class UrlConstants {
   static const String baseUrl = 'https://feeds.feedburner.com/filmjunk';
-
+  static const String baseGAPI = 'https://script.google.com/macros/s/AKfycbxKTxGrkxGadwUAPcECCSvP1L_gm8j4vj2s_qo_1cBdGVtguf4d/exec';
 }
 
