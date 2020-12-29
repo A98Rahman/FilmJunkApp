@@ -1,23 +1,27 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:xml/xml.dart';
-import 'package:webfeed/webfeed.dart';
-import '../models/feed_data.dart';
-import '../network/network_calls.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:html/parser.dart' show parse;
 import '../global_settings.dart';
+import '../models/soundboard_data.dart';
 
 class SoundboardApi{
 
-  Future<String> getSoundboards() async {
-    var response = await networkCalls.getData(UrlConstants.baseGAPI);
-    // var feed = RssFeed.parse(response);
-    // var items = feed.items;
-    // var temp = items.map((item) => FeedData.from(item)).toList();
-    return response;
-    // print('');
-  }
+  Future<List<SoundboardData>> getSoundboards() async {
+    var response = await networkCalls.getData(UrlConstants
+        .soundBoardIndexDir); //Use the Index Dir when you need to grab the PHP script.
 
+    String prefix = "<html><head></head><body>"; //Just making sure that the php script parses correctly.
+    String suffix = "</body></html>";
+
+    String body = prefix + response + suffix;
+
+    var doc = parse(
+        body); //Normally it would take Response.body but that is exactly what we return from networkCalls.getData()
+    var items = doc.getElementsByTagName('html a');
+
+    var soundboardData = items.map((item) => SoundboardData.from(item.text))
+        .toList();
+    return soundboardData;
+  }
 
 }
