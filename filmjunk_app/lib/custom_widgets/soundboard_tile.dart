@@ -13,7 +13,11 @@ class SoundboardTile extends StatelessWidget {
     AudioPlayer player = AudioPlayer();
     int result = await player
         .play(this._Url);
-    if (result == 1) {}
+    if (result == 1) {
+      //Success
+    } else{
+      //Not Succesful, display a toast saying that its unavailable.
+    }
   }
 
 
@@ -31,15 +35,14 @@ class SoundboardTile extends StatelessWidget {
           onTap: () {
             play();
           },
-          child:
-            Container(
-              padding: const EdgeInsets.fromLTRB(_hPad, 32.0, _hPad, 4.0),
+          child:InkWell(child:
+            TextButton(
                 child: Text(_title, style: Theme.of(context).textTheme.bodyText1))
         /*Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: _hPad),
             child: Text(_title))*/
-      )],
+      ),)],
       //)
     );
   }

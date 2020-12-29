@@ -35,9 +35,9 @@ class _SoundboardHomeState extends State<SoundboardHome> {
       child: ListView.builder(
         itemCount: items.length,
         itemBuilder: (BuildContext context, int row) {
-          if (row.isOdd)
-            return Divider();
-          else
+          // if (row.isOdd)
+          //   return Divider();
+          // else
             return _buildRow(items[row].soundName, items[row].url);
         },
       ),
