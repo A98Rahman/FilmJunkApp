@@ -2,7 +2,6 @@ import 'package:filmjunk_app/controllers/soundboard_api.dart';
 import 'package:filmjunk_app/custom_widgets/soundboard_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import "dart:developer";
 import '../models/soundboard_data.dart';
 
 class SoundboardHome extends StatefulWidget {
@@ -30,9 +29,8 @@ class _SoundboardHomeState extends State<SoundboardHome> {
 
 
   _buildSoundBoard(List<SoundboardData> items){
-    return Container(
-      color: Colors.white,
-      child: ListView.builder(
+    return Column(
+      children: <Widget>[ ListView.builder(
         itemCount: items.length,
         itemBuilder: (BuildContext context, int row) {
           // if (row.isOdd)
@@ -40,7 +38,7 @@ class _SoundboardHomeState extends State<SoundboardHome> {
           // else
             return _buildRow(items[row].soundName, items[row].url);
         },
-      ),
+      )],
     );
   }
 
@@ -57,7 +55,7 @@ class _SoundboardHomeState extends State<SoundboardHome> {
           title:
               Text("SoundBoards", style: Theme.of(context).textTheme.headline1),
         ),
-        body: Column(
+        body: SingleChildScrollView(child: Column(
           children:
           <Widget>[ FutureBuilder(
               future: soundboard,
@@ -66,12 +64,28 @@ class _SoundboardHomeState extends State<SoundboardHome> {
                 if(!snapshot.hasData)
                   return CircularProgressIndicator();
                 List items = snapshot.data;
-                return new Flexible(
-                  fit: FlexFit.loose,
-                  child: _buildSoundBoard(items),
-                );
+                return new  GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                    shrinkWrap: true,
+                    physics: ScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    itemCount: items.length,
+                    itemBuilder: (context,index){
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[(Flexible(
+                            fit: FlexFit.loose,
+                            child:
+                        _buildRow(items[index].soundName, items[index].url)
+                        ))
+                        ],
+                      );
+                    }) ;
+                // Flexible(
+                // fit: FlexFit.loose,
+                  // child: _buildSoundBoard(items),
+                // );
               } ,
             ),
-        ]));
+        ])));
   }
 }

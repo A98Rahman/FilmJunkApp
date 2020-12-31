@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/feed_data.dart';
 
 class FeedTile extends StatelessWidget {
   final String _title;

@@ -1,10 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:xml/xml.dart';
-import 'package:webfeed/webfeed.dart';
-import 'models/feed_data.dart';
 import 'network/network_calls.dart';
 
 final networkCalls = NetworkCalls();

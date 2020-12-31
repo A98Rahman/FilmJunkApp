@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:html/parser.dart' show parse;
 import '../global_settings.dart';
 import '../models/soundboard_data.dart';

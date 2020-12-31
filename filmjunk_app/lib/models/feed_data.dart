@@ -1,6 +1,3 @@
-import 'package:filmjunk_app/custom_widgets/feed_tile.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:webfeed/webfeed.dart';
 
 class FeedData {

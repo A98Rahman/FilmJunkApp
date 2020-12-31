@@ -1,5 +1,4 @@
 import 'package:filmjunk_app/global_settings.dart';
-import 'package:flutter/material.dart';
 
 class SoundboardData {
   String soundName;

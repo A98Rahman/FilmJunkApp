@@ -3,16 +3,15 @@ import 'package:audioplayers/audioplayers.dart';
 
 class SoundboardTile extends StatelessWidget {
   final String _title;
-  final String _Url;
-  static const double _hPad = 16.0;
+  final String _url;
   bool isSelected = false;
 
-  SoundboardTile(this._title, this._Url);
+  SoundboardTile(this._title, this._url);
 
   play() async {
     AudioPlayer player = AudioPlayer();
     int result = await player
-        .play(this._Url);
+        .play(this._url);
     if (result == 1) {
       //Success
     } else{
@@ -38,10 +37,6 @@ class SoundboardTile extends StatelessWidget {
           child:InkWell(child:
             TextButton(
                 child: Text(_title, style: Theme.of(context).textTheme.bodyText1))
-        /*Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: _hPad),
-            child: Text(_title))*/
       ),)],
       //)
     );
