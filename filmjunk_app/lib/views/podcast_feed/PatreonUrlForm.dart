@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:webfeed/webfeed.dart';
+import 'package:http/http.dart' as http;
 
 
 class PatreonUrlForm extends StatefulWidget {
@@ -32,6 +32,7 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         children: <Widget>[
           TextFormField(
             validator: (value) {
+              final isValid = validate(value);
               if (value.isEmpty) {
                 return 'Please enter Patreon URL';
               }
@@ -55,4 +56,19 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
       ),
     );
   }
+
+  Future<bool> validate(String value) async {
+    var client = http.Client();
+    try {
+      // RSS feed
+      var response = await client.get(value);
+      var channel = RssFeed.parse(response.body);
+      return true;
+    }
+    catch(e){
+      print("$e");
+      return false;
+    }
+  }
+
 }
