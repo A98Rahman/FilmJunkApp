@@ -31,9 +31,11 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
+            decoration: InputDecoration(labelText: 'Patreon RSS Link'),
+            keyboardType: TextInputType.url,
             validator: (value) {
               final isValid = validate(value);
-              if (value.isEmpty) {
+              if (isValid != null) {
                 return 'Please enter Patreon URL';
               }
               return null;
