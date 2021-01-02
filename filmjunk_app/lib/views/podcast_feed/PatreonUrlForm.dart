@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 
@@ -45,9 +45,9 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
-            controller: myController,
             validator: (value) {
-              if (value.isEmpty) {
+              final isValid = validate(value);
+              if (isValid != null) {
                 return 'Please enter Patreon URL';
               }
               return null;
@@ -71,6 +71,21 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
           ),
         ],
       ),
-    )));
+    );
   }
+
+  Future<bool> validate(String value) async {
+    var client = http.Client();
+    try {
+      // RSS feed
+      var response = await client.get(value);
+      var channel = RssFeed.parse(response.body);
+      return true;
+    }
+    catch(e){
+      print("$e");
+      return false;
+    }
+  }
+
 }
