@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -84,11 +85,24 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
               child: Text('Submit'),
             ),
           ),
-          Text('https://support.patreon.com/hc/en-us/articles/212055866-Subscribe-to-your-Audio-RSS-link-on-the-Patreon-app')
-        ],
-
-      ),
-    )));
+          new RichText(
+            text: new TextSpan(
+              children: [
+                new TextSpan(
+                  text: 'Patreon RSS Link',
+                  style: new TextStyle(color: Colors.blue),
+                  recognizer: new TapGestureRecognizer()
+                    ..onTap = () { launch('https://support.patreon.com/hc/en-us/articles/212055866-Subscribe-to-your-Audio-RSS-link-on-the-Patreon-app');
+                    },
+                ),
+              ],
+            ),
+          ),
+          ],
+    ),
+        )
+        )
+    );
   }
 
   Future<bool> validate(String value) async {
