@@ -1,20 +1,19 @@
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:filmjunk_app/models/feed_data.dart';
 import 'package:filmjunk_app/views/podcast_feed/PatreonUrlForm.dart';
+import 'package:filmjunk_app/views/soundboard_home.dart';
 import 'package:flutter/material.dart';
 import 'package:filmjunk_app/controllers/feed_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class PodcastFeed extends StatefulWidget {
   @override
   _PodcastFeedState createState() => _PodcastFeedState();
- }
+}
 
 class _PodcastFeedState extends State<PodcastFeed> {
-  final List<String> entries = <String>['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
   String _nowPlaying = '<No podcast selected>';
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
@@ -29,40 +28,50 @@ class _PodcastFeedState extends State<PodcastFeed> {
     feedList = _refresh();
   }
 
-   _refresh() async {
-     // return api.getFeed().then((value) => list);
-     String url = await feedSource();
-     feedList =  api.getFeed(url);
-     list = await feedList;
-     return list;
-   }
-
-
-  patreonFeed(){
-    Navigator.push( context, MaterialPageRoute( builder: (context) => PatreonUrlForm()), ).then((value) => setState(() {_refresh();}));
+  _refresh() async {
+    // return api.getFeed().then((value) => list);
+    String url = await feedSource();
+    feedList = api.getFeed(url);
+    list = await feedList;
+    return list;
   }
 
 
-  Future<String> feedSource() async { //Checks the Shared preferences to see if the feed will be called from Patreon Link or the Regular link.
-       SharedPreferences prefs = await SharedPreferences.getInstance();
-       String patreonRss = (prefs.get('patreon_rss') ?? "") ; //null check
-       if(patreonRss == ""){
-         return UrlConstants.baseUrl;
-       }else{
-         return patreonRss;
-       }
-   }
+  patreonFeed() {
+    Navigator.push(
+      context, MaterialPageRoute(builder: (context) => PatreonUrlForm()),)
+        .then((value) =>
+        setState(() {
+          _refresh();
+        }));
+  }
+
+
+  Future<String> feedSource() async {
+    //Checks the Shared preferences to see if the feed will be called from Patreon Link or the Regular link.
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String patreonRss = (prefs.get('patreon_rss') ?? ""); //null check
+    if (patreonRss == "") {
+      return UrlConstants.baseUrl;
+    } else {
+      return patreonRss;
+    }
+  }
 
   Widget _buildFeed(List<dynamic> feed) {
+    int row = 0;
     return Container(
       color: Colors.white,
       child: ListView.builder(
         itemCount: feed.length,
-        itemBuilder: (BuildContext context, int row) {
-          if (row.isOdd)
+        itemBuilder: (BuildContext context, int itemCount) {
+          if (itemCount.isOdd) {
+            row++;
             return Divider();
+          }
           else
-            return _buildRow(feed[row].title, feed[row].guid, DateFormat('yyyy-MM-dd').format(feed[row].datetime));
+            return _buildRow(feed[row].title, feed[row].guid,
+                DateFormat('yyyy-MM-dd').format(feed[row].datetime));
         },
       ),
     );
@@ -75,14 +84,14 @@ class _PodcastFeedState extends State<PodcastFeed> {
       subtitle: Text('Published: $pubDate'),
       trailing: new IconButton(
         icon: new Icon(Icons.info_outline),
-        onPressed: () =>_showToast('Info: $guid'),
+        onPressed: () => _showToast('Info: $guid'),
       ),
-      onTap: () => _selectToPlay('$title now playing'),
+      onTap: () => _selectToPlay('$title'),
     );
   } // _buildRow
 
   // Update the podcast playing
-  void _selectToPlay (String p) {
+  void _selectToPlay(String p) {
     setState(() {
       _nowPlaying = p;
       _currentSeekValue = 0.0;
@@ -122,151 +131,223 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title:
-              Text("FILM JUNK", style: Theme.of(context).textTheme.headline1),
-          actions: [
-            IconButton(icon: Icon(Icons.search), onPressed: (){
-              showSearch(context: context, delegate: FeedSearch(list));
-            }),
-          ],
+    return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("FILM JUNK", style: Theme
+                .of(context)
+                .textTheme
+                .headline1),
+            actions: [
+              IconButton(icon: Icon(Icons.search), onPressed: () {
+                showSearch(context: context, delegate: FeedSearch(list));
+              }),
+            ],
+            bottom: TabBar (
+              tabs: <Widget>[
+                Tab(
+                  text: 'Feed',
+                ),
+                Tab(
+                  text: 'Soundboard',
+                ),
+              ],
+            ),
+          ),
+          body: TabBarView (
+            children: [
+              Column(
+                children: <Widget>[
+                  //////////////////////////////////////////////////////////////////////////
+                  // TODO Only for testing, remove them when designing the UI.
+                  TextButton(
+                      child: Text("Patreon Feed"),
+                      onPressed: () {
+                        patreonFeed();
+                      } //The router will help us navigate through the views in the app.
+                  ),
+                  // TextButton(
+                  //     child: Text("Soundboard"),
+                  //     onPressed: () {
+                  //       Navigator.pushNamed(context, '/soundboard');
+                  //     } //The router will help us navigate through the views in the app.
+                  // ),
+                  //////////////////////////////////////////////////////////////////////////
+                  FutureBuilder(
+                    future: feedList,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (!snapshot.hasData)
+                        return Center(child: CircularProgressIndicator());
+                      List items = snapshot.data;
+                      return new Flexible(
+                        fit: FlexFit.loose,
+                        child: _buildFeed(items),
+                      );
+                    },
+                  ),
+                ], //Need an iterable
+              ),
+              SoundboardHome(),
+            ],
+          ),
+          floatingActionButton: ControlsFAB(),
         ),
-        body: //SingleChildScrollView(
-            // child: ConstrainedBox(
-            //     constraints: BoxConstraints(),
-        Column(
-                  children: <Widget>[
-                    //////////////////////////////////////////////////////////////////////////
-//TODO Only for testing, remove them when designing the UI.
-                    TextButton(child: Text("Patreon Feed"),
-                    onPressed: () {
-                      patreonFeed();
-                      }  //The router will help us navigate through the views in the app.
-                    ),
-                    TextButton(child: Text("Soundboard"),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/soundboard');
-                        }  //The router will help us navigate through the views in the app.
-                    ),
-                    //////////////////////////////////////////////////////////////////////////
-
-                    FutureBuilder(
-                      future: feedList,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<dynamic> snapshot) {
-                        if (!snapshot.hasData)
-                          return Center(child: CircularProgressIndicator());
-                        
-                          List items = snapshot.data;
-                          return new Flexible(
-                            fit: FlexFit.loose,
-                              child: _buildFeed(items),
-                          );
-                      },
-                    ),
-                    Container( // The persistent player at the bottom of the page
-                      padding: EdgeInsets.all(16.0),
-                      color: Colors.blue,
-                      child: Column(
-                        children: [
-                          Text( // The title of the podcast being played
-                            _nowPlaying,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          Slider( // The seek bar for playback
-                            value: _currentSeekValue,
-                            activeColor: Colors.white,
-                            min: 0,
-                            max: 100,
-                            onChanged: (double value) {
-                              setState(() {
-                                _currentSeekValue = value;
-                              });
-                            },
-                          ),
-                          Row( // Button controls for the player
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CircleAvatar( // Info button
-                                radius: 20,
-                                child: Center(child: IconButton(
-                                  icon: Icon(
-                                    Icons.info_outline,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () => _showToast('Info'),
-                                ),),
-                              ),
-                              CircleAvatar( // Previous button
-                                radius: 20,
-                                child: Center(child: IconButton(
-                                    icon: Icon(
-                                      Icons.arrow_back_ios_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () => _showToast("previous")
-                                ),),
-                              ),
-                              CircleAvatar( // Play/Pause button
-                                radius: 30,
-                                child: Center(child: IconButton(
-                                    icon: Icon(
-                                        playPauseIcon),
-                                    onPressed: () => _togglePlayPause())
-                                ),
-                              ),
-                              CircleAvatar(
-                                radius: 20,
-                                child: Center(child: IconButton(
-                                    icon: Icon(
-                                      Icons.arrow_forward_ios_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () => _showToast("next")
-                                ),),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-
-                  ] //Need an iterable
-                  ,
-                )//)
-    // )
     );
     // throw UnimplementedError();
   }
 
+  List<Widget> tabs = [
+    // FutureBuilder(
+    //   future: feedList,
+    //   builder: (BuildContext context,
+    //       AsyncSnapshot<dynamic> snapshot) {
+    //     if (!snapshot.hasData)
+    //       return Center(child: CircularProgressIndicator());
+    //     List items = snapshot.data;
+    //     return new Flexible(
+    //       fit: FlexFit.loose,
+    //       child: _buildFeed(items),
+    //     );
+    //   },
+    // ),
+    Container (
+      color: Colors.amber,
+    ),
+    Container (
+      child: SoundboardHome(),
+    )
+  ];
+
 }
 
-class FeedSearch extends SearchDelegate<FeedData>{
+class ControlsFAB extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => MediaControls(),
+        );
+      },
+      child: Icon(Icons.music_note),
+    );
+  }
+}
+
+class MediaControls extends StatelessWidget {
+  String _nowPlaying = '<No podcast selected>';
+  IconData playPauseIcon = Icons.play_arrow;
+  bool _isPlay = false;
+  double _currentSeekValue = 40;
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    return Container( // The persistent player at the bottom of the page
+      padding: EdgeInsets.all(16.0),
+      height: 200.0,
+      width: width,
+      color: Colors.blue,
+      child: Column(
+        children: [
+          Text( // The title of the podcast being played
+            _nowPlaying,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+          Slider( // The seek bar for playback
+            value: _currentSeekValue,
+            activeColor: Colors.white,
+            min: 0,
+            max: 100,
+            // onChanged: (double value) {
+            //   setState(() {
+            //     _currentSeekValue = value;
+            //   });
+            // },
+          ),
+          Row( // Button controls for the player
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CircleAvatar( // Info button
+                radius: 20,
+                child: Center(child: IconButton(
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.white,
+                  ),
+                  // onPressed: () => _showToast('Info'),
+                ),),
+              ),
+              CircleAvatar( // Previous button
+                radius: 20,
+                child: Center(child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_outlined,
+                    color: Colors.white,
+                  ),
+                  // onPressed: () => _showToast("previous")
+                ),),
+              ),
+              CircleAvatar( // Play/Pause button
+                radius: 30,
+                child: Center(child: IconButton(
+                  icon: Icon(
+                      playPauseIcon),
+                  // onPressed: () => _togglePlayPause()
+                )),
+              ),
+              CircleAvatar(
+                radius: 20,
+                child: Center(child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    color: Colors.white,
+                  ),
+                  // onPressed: () => _showToast("next")
+                ),),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;
+
   FeedSearch(this.feeditems);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [IconButton(
         icon: Icon(Icons.clear),
-        onPressed: (){
-          query='';
+        onPressed: () {
+          query = '';
+
           ///The logic to start playing the selected podcast should go here.
         }
-        ),
+    ),
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: (){
-          close(context,null);
-    },
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
     );
   }
 
@@ -277,24 +358,27 @@ class FeedSearch extends SearchDelegate<FeedData>{
 
   @override
   Widget buildSuggestions(BuildContext context) {
-
     List<FeedData> result = feeditems;
-    result = feeditems.where((dat)=>dat.title.toLowerCase().contains(query)? true:false).toList();
+    result = feeditems.where((dat) =>
+    dat.title.toLowerCase().contains(query)
+        ? true
+        : false).toList();
 
-    if(result.isEmpty){
-
+    if (result.isEmpty) {
       return Text(query);
     }
 
     return Container(
       child: ListView(
-        children:
-          result.map((data) => ListTile(title: Text(data.title), onTap: (){query = data.title;}))
+          children:
+          result.map((data) =>
+              ListTile(title: Text(data.title), onTap: () {
+                query = data.title;
+              }))
               .toList()
 
       ),
     );
-
   }
 //
 }

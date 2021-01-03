@@ -50,42 +50,39 @@ class _SoundboardHomeState extends State<SoundboardHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title:
-              Text("SoundBoards", style: Theme.of(context).textTheme.headline1),
+    return SingleChildScrollView(child: Column(
+        children:
+        <Widget>[ FutureBuilder(
+          future: soundboard,
+          builder:(BuildContext context,
+              AsyncSnapshot<dynamic> snapshot) {
+            if(!snapshot.hasData)
+              return CircularProgressIndicator();
+            List items = snapshot.data;
+            return new  GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                shrinkWrap: true,
+                physics: ScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemCount: items.length,
+                itemBuilder: (context,index){
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[(Flexible(
+                        fit: FlexFit.loose,
+                        child: _buildRow(
+                            items[index].soundName,
+                            items[index].url
+                        )
+                    ))],
+                  );
+                }
+            );
+            // Flexible(
+            // fit: FlexFit.loose,
+            // child: _buildSoundBoard(items),
+            // );
+          } ,
         ),
-        body: SingleChildScrollView(child: Column(
-          children:
-          <Widget>[ FutureBuilder(
-              future: soundboard,
-              builder:(BuildContext context,
-          AsyncSnapshot<dynamic> snapshot) {
-                if(!snapshot.hasData)
-                  return CircularProgressIndicator();
-                List items = snapshot.data;
-                return new  GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemCount: items.length,
-                    itemBuilder: (context,index){
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[(Flexible(
-                            fit: FlexFit.loose,
-                            child:
-                        _buildRow(items[index].soundName, items[index].url)
-                        ))
-                        ],
-                      );
-                    }) ;
-                // Flexible(
-                // fit: FlexFit.loose,
-                  // child: _buildSoundBoard(items),
-                // );
-              } ,
-            ),
-        ])));
+        ]));
   }
 }
