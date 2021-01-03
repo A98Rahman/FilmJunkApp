@@ -1,12 +1,11 @@
-import 'package:filmjunk_app/custom_widgets/feed_tile.dart';
-import 'package:filmjunk_app/models/feed_data.dart';
-import 'package:flutter/material.dart';
-import 'package:filmjunk_app/util/style.dart';
 import 'package:filmjunk_app/global_settings.dart';
+import 'package:filmjunk_app/models/feed_data.dart';
+import 'package:filmjunk_app/views/podcast_feed/PatreonUrlForm.dart';
+import 'package:flutter/material.dart';
 import 'package:filmjunk_app/controllers/feed_api.dart';
-import '../../custom_widgets/filter_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class PodcastFeed extends StatefulWidget {
@@ -32,8 +31,26 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
    _refresh() async {
      // return api.getFeed().then((value) => list);
-     list = await api.getFeed();
+     String url = await feedSource();
+     feedList =  api.getFeed(url);
+     list = await feedList;
      return list;
+   }
+
+
+  patreonFeed(){
+    Navigator.push( context, MaterialPageRoute( builder: (context) => PatreonUrlForm()), ).then((value) => setState(() {_refresh();}));
+  }
+
+
+  Future<String> feedSource() async { //Checks the Shared preferences to see if the feed will be called from Patreon Link or the Regular link.
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       String patreonRss = (prefs.get('patreon_rss') ?? "") ; //null check
+       if(patreonRss == ""){
+         return UrlConstants.baseUrl;
+       }else{
+         return patreonRss;
+       }
    }
 
   Widget _buildFeed(List<dynamic> feed) {
@@ -119,9 +136,21 @@ class _PodcastFeedState extends State<PodcastFeed> {
             // child: ConstrainedBox(
             //     constraints: BoxConstraints(),
         Column(
-                  // mainAxisAlignment: MainAxisAlignment.start,
-                  // crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
+                    //////////////////////////////////////////////////////////////////////////
+//TODO Only for testing, remove them when designing the UI.
+                    TextButton(child: Text("Patreon Feed"),
+                    onPressed: () {
+                      patreonFeed();
+                      }  //The router will help us navigate through the views in the app.
+                    ),
+                    TextButton(child: Text("Soundboard"),
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/soundboard');
+                        }  //The router will help us navigate through the views in the app.
+                    ),
+                    //////////////////////////////////////////////////////////////////////////
+
                     FutureBuilder(
                       future: feedList,
                       builder: (BuildContext context,

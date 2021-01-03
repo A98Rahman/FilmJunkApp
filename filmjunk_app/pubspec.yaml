@@ -36,6 +36,10 @@ dev_dependencies:
   http:
   webfeed:
   flutter_bloc:
+  fluttertoast:
+  audioplayers:
+  web_scraper:
+  shared_preferences:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
