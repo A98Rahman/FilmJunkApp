@@ -22,23 +22,37 @@ class SoundboardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return //Flexible(
-        //   fit: FlexFit.loose,
-        Column(
-      mainAxisAlignment: MainAxisAlignment
-          .start, //This is where we set up the dimensions of the returning widget.
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-
-      children: [GestureDetector(
-          onTap: () {
-            play();
-          },
-          child:InkWell(child:
-            TextButton(
-                child: Text(_title, style: Theme.of(context).textTheme.bodyText1))
-      ),)],
-      //)
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start, //This is where we set up the dimensions of the returning widget.
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            child: ClipOval(
+              child: Material(
+                elevation: 8.0,
+                color: Colors.blue,
+                child: InkWell(
+                  splashColor: Colors.lightBlueAccent,
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: Icon(Icons.multitrack_audio),
+                  ),
+                  onTap: () {play();},
+                )
+              )
+            ),
+          ),
+          Text(
+            _title,
+            style: Theme.of(context).textTheme.bodyText1,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
+
 }
