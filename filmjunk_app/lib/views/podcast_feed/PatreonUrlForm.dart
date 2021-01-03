@@ -47,7 +47,8 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         Container(child: Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           TextFormField(
             controller: myController,
