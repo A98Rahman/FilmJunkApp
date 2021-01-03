@@ -10,11 +10,9 @@ class FeedTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return //Flexible(
-        //   fit: FlexFit.loose,
-        Column(
-      mainAxisAlignment: MainAxisAlignment
-          .start, //This is where we set up the dimensions of the returning widget.
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      //This is where we set up the dimensions of the returning widget.
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
 
@@ -27,7 +25,6 @@ class FeedTile extends StatelessWidget {
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: _hPad),
             child: Text(_description)),
       ],
-      //)
     );
   }
 }
