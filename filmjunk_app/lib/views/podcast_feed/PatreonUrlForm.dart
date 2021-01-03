@@ -1,8 +1,9 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webfeed/webfeed.dart';
+import 'package:http/http.dart' as http;
 
 class PatreonUrlForm extends StatefulWidget {
   @override
@@ -38,7 +39,8 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
-    return Scaffold(body:
+    return Scaffold(
+        body:
         Container(child: Form(
       key: _formKey,
       child: Column(
@@ -46,11 +48,20 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         children: <Widget>[
           TextFormField(
             validator: (value) {
-              final isValid = validate(value);
-              if (isValid != null) {
-                return 'Please enter Patreon URL';
-              }
-              return null;
+              final isValid = validate(value).then((valid) {
+                if(valid){
+                  debugPrint("VALID");
+                  _patreonURL = myController.text;
+                  savePatreonRss(value);
+                  Navigator.pop(context);
+                  return "Parsing...";
+                }
+                else{
+                  debugPrint("INVALID");
+                      return "Please enter a Patreon URL";
+                }
+              });
+              return "";
             },
           ),
           Padding(
@@ -61,9 +72,7 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
                 // otherwise.
                 if (_formKey.currentState.validate()) {
                   // _patreonURL = _formKey.currentState.toString();
-                  _patreonURL = myController.text;
-                  savePatreonRss(_patreonURL);
-                  Navigator.pop(context);
+
                 }
               },
               child: Text('Submit'),
@@ -71,7 +80,7 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
           ),
         ],
       ),
-    );
+    )),);
   }
 
   Future<bool> validate(String value) async {

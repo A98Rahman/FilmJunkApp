@@ -254,6 +254,7 @@ class FeedSearch extends SearchDelegate<FeedData>{
         icon: Icon(Icons.clear),
         onPressed: (){
           query='';
+          ///The logic to start playing the selected podcast should go here.
         }
         ),
     ];
