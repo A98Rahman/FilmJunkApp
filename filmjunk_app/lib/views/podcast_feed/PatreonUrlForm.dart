@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webfeed/webfeed.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -46,9 +48,12 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         children: <Widget>[
           TextFormField(
             controller: myController,
+            decoration: InputDecoration(labelText: 'Patreon RSS Link'),
+            keyboardType: TextInputType.url,
             validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter Patreon URL';
+              final isValid = validate(value);
+              if ( isValid != null ) {
+                return "Please enter Film Junk's Patreon RSS link.";
               }
               return null;
             },
@@ -60,7 +65,6 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
                 // Validate returns true if the form is valid, or false
                 // otherwise.
                 if (_formKey.currentState.validate()) {
-                  // _patreonURL = _formKey.currentState.toString();
                   _patreonURL = myController.text;
                   savePatreonRss(_patreonURL);
                   Navigator.pop(context);
@@ -72,5 +76,19 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
         ],
       ),
     )));
+  }
+
+  Future<bool> validate(String value) async {
+    var client = http.Client();
+    try {
+      // RSS feed
+      var response = await client.get(value);
+      var channel = RssFeed.parse(response.body);
+      return true;
+    }
+    catch(e){
+      print("$e");
+      return false;
+    }
   }
 }
