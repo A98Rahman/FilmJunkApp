@@ -53,11 +53,20 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
             decoration: InputDecoration(labelText: 'Patreon RSS Link'),
             keyboardType: TextInputType.url,
             validator: (value) {
-              final isValid = validate(value);
-              if ( isValid != null ) {
-                return "Please enter Film Junk's Patreon RSS link.";
-              }
-              return null;
+              final isValid = validate(value).then((valid) {
+                if(valid){
+                  debugPrint("VALID");
+                  _patreonURL = myController.text;
+                  savePatreonRss(value);
+                  Navigator.pop(context);
+                  return "Parsing...";
+                }
+                else{
+                  debugPrint("INVALID");
+                  return "Please enter a Patreon URL";
+                }
+              });
+              return "";
             },
           ),
           Padding(
@@ -75,7 +84,9 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
               child: Text('Submit'),
             ),
           ),
+          Text('https://support.patreon.com/hc/en-us/articles/212055866-Subscribe-to-your-Audio-RSS-link-on-the-Patreon-app')
         ],
+
       ),
     )));
   }
