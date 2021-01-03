@@ -59,19 +59,17 @@ class _PodcastFeedState extends State<PodcastFeed> {
   }
 
   Widget _buildFeed(List<dynamic> feed) {
-    int row = 0;
     return Container(
       color: Colors.white,
-      child: ListView.builder(
+      child: ListView.separated(
         itemCount: feed.length,
+        separatorBuilder: (BuildContext context, int itemCount) => Divider(height: 1),
         itemBuilder: (BuildContext context, int itemCount) {
-          if (itemCount.isOdd) {
-            row++;
-            return Divider();
-          }
-          else
-            return _buildRow(feed[row].title, feed[row].guid,
-                DateFormat('yyyy-MM-dd').format(feed[row].datetime));
+            return _buildRow(
+                feed[itemCount].title,
+                feed[itemCount].guid,
+                DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime)
+            );
         },
       ),
     );
@@ -225,14 +223,15 @@ class _PodcastFeedState extends State<PodcastFeed> {
 class ControlsFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
+    return FloatingActionButton.extended(
       onPressed: () {
         showModalBottomSheet(
           context: context,
           builder: (context) => MediaControls(),
         );
       },
-      child: Icon(Icons.music_note),
+      icon: Icon(Icons.play_arrow),
+      label: Text('Now Playing'),
     );
   }
 }
@@ -277,16 +276,6 @@ class MediaControls extends StatelessWidget {
           Row( // Button controls for the player
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              CircleAvatar( // Info button
-                radius: 20,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: Colors.white,
-                  ),
-                  // onPressed: () => _showToast('Info'),
-                ),),
-              ),
               CircleAvatar( // Previous button
                 radius: 20,
                 child: Center(child: IconButton(
