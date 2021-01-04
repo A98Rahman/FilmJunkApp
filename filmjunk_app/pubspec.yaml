@@ -41,6 +41,7 @@ dev_dependencies:
   audioplayers: ^0.16.2
   web_scraper:
   shared_preferences:
+  percent_indicator: ^2.1.7+2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

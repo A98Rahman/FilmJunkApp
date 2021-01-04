@@ -1,11 +1,11 @@
 import 'dart:async';
-
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class MediaControls extends StatefulWidget {
   String _nowPlaying = '<No podcast selected>';
@@ -44,27 +44,20 @@ class MediaControls extends StatefulWidget {
 
     _MediaControlsState(String nowPlaying, String url, bool isPlay,
         int currentSeekVal, AudioPlayer player){
-      StreamSubscription _positionSubscription;
       this._nowPlaying = nowPlaying;
       this._url = url;
       this._isPlay = isPlay;
       this.player = player;
-    //   stream() {
-    //     _positionSubscription = player.onAudioPositionChanged.listen((p) {
-    //       setState(() => _currentSeekValue = p.inSeconds as double);
-    //       print(p.inSeconds);
-    //       // You should add your code here
-    //       }
-    //
-    // );
-    // }
+      if(_isPlay)
+          playPauseIcon = Icons.play_arrow;
+
+      play();
     }
 
     void initState() {
       super.initState();
       UrlConstants.isConnected(context);
       print('');
-      play();
     }
 
 
@@ -72,6 +65,7 @@ class MediaControls extends StatefulWidget {
       print(this._url + " ////////////////////////////////////////");
       int result = await player.play(this._url);
       if (result == 1) { //If the result == 1 then there were no issues while play back
+
 
         player.onAudioPositionChanged.listen((Duration p) { //Get the position stream for the slider
           print('Current position: $p');
@@ -128,8 +122,12 @@ class MediaControls extends StatefulWidget {
                 color: Colors.white,
                 fontSize: 20,
               ),
-            ),
-            Slider( // The seek bar for playback
+            ),Center(child:
+           new LinearPercentIndicator(
+             width: MediaQuery.of(context).size.width *(6/7),
+             percent: _currentSeekValue/_duration,
+           )),
+           /* Slider( // The seek bar for playback
               value:  _currentSeekValue.toDouble(),
               activeColor: Colors.white,
               min: 0,
@@ -140,7 +138,7 @@ class MediaControls extends StatefulWidget {
                  
                 });
               },
-            ),
+            ),*/
             Row( // Button controls for the player
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
