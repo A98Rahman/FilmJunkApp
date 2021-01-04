@@ -12,7 +12,7 @@ class MediaControls extends StatefulWidget {
   String _url;
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
-  double _currentSeekValue=0;
+  int _currentSeekValue;
   AudioPlayer player = AudioPlayer();
 
   Dispose(){
@@ -21,7 +21,7 @@ class MediaControls extends StatefulWidget {
 
 
   MediaControls(String nowPlaying, String url, bool isPlay,
-      double currentSeekVal) {
+      int currentSeekVal) {
       this._nowPlaying = nowPlaying;
       this._url = url;
       this._isPlay = isPlay;
@@ -36,13 +36,14 @@ class MediaControls extends StatefulWidget {
     String _url;
     IconData playPauseIcon = Icons.play_arrow;
     bool _isPlay;
-    double _currentSeekValue=0;
+    int _currentSeekValue=0;
     AudioPlayer player;
+    int _duration=10000000000000;
     // ignore: close_sinks
 
 
     _MediaControlsState(String nowPlaying, String url, bool isPlay,
-        double currentSeekVal, AudioPlayer player){
+        int currentSeekVal, AudioPlayer player){
       StreamSubscription _positionSubscription;
       this._nowPlaying = nowPlaying;
       this._url = url;
@@ -77,6 +78,11 @@ class MediaControls extends StatefulWidget {
         );
         // Scaffold.of(context).showSnackBar(snackBar);
       }
+       player.onAudioPositionChanged.listen((Duration  p) {
+      print('Current position: $p');
+          setState(() => _currentSeekValue = p.inMilliseconds);
+    });
+      _duration = await player.getDuration();
     }
 
 // Toggle play/pause button
@@ -118,15 +124,15 @@ class MediaControls extends StatefulWidget {
               ),
             ),
             Slider( // The seek bar for playback
-              value: _currentSeekValue,
+              value:  _currentSeekValue.toDouble(),
               activeColor: Colors.white,
               min: 0,
-              max: 100,
-              // onChanged: (double value) {
-              //   setState(() {
-              //     _currentSeekValue = value;
-              //   });
-              // },
+              max: _duration.toDouble(),
+              onChanged: (double value) {
+                setState(() {
+                  _currentSeekValue = value as int;
+                });
+              },
             ),
             Row( // Button controls for the player
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

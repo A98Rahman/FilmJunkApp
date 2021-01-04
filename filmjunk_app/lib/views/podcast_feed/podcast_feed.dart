@@ -19,7 +19,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
   String _url = "";
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
-  double _currentSeekValue = 0;
+  int _currentSeekValue = 0;
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
@@ -97,10 +97,10 @@ class _PodcastFeedState extends State<PodcastFeed> {
   void _selectToPlay(String guid, String title) {
     setState(() {
       _nowPlaying = title;
-      _currentSeekValue = 0.0;
+      _currentSeekValue = 0;
       mediaControl.Dispose();
       mediaControl = null;
-      mediaControl = MediaControls(title, guid, true, 0.0);
+      mediaControl = MediaControls(title, guid, true, 0);
 
     });
   }
