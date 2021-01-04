@@ -11,6 +11,7 @@ import 'package:audioplayers/audioplayers.dart';
 class MediaControls extends StatefulWidget {
   String _nowPlaying = '<No podcast selected>';
   String _url;
+  String _description;
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
   int _currentSeekValue;
@@ -21,20 +22,22 @@ class MediaControls extends StatefulWidget {
   }
 
 
-  MediaControls(String nowPlaying, String url, bool isPlay,
+  MediaControls(String nowPlaying, String url, String description, bool isPlay,
       int currentSeekVal) {
       this._nowPlaying = nowPlaying;
       this._url = url;
+      this._description = description;
       this._isPlay = isPlay;
       this._currentSeekValue = currentSeekVal;
   }
 
-  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_isPlay,_currentSeekValue, player);
+  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_description,_isPlay,_currentSeekValue, player);
 }
   class _MediaControlsState extends State<MediaControls> {
 
     String _nowPlaying = '<No podcast selected>';
     String _url;
+    String _description;
     IconData playPauseIcon = Icons.play_arrow;
     bool _isPlay;
     int _currentSeekValue=0;
@@ -43,7 +46,7 @@ class MediaControls extends StatefulWidget {
     // ignore: close_sinks
 
 
-    _MediaControlsState(String nowPlaying, String url, bool isPlay,
+    _MediaControlsState(String nowPlaying, String url, String description, bool isPlay,
         int currentSeekVal, AudioPlayer player){
       StreamSubscription _positionSubscription;
       this._nowPlaying = nowPlaying;
@@ -168,6 +171,10 @@ class MediaControls extends StatefulWidget {
                 ),
               ],
             ),
+            Text(
+              _description,
+              softWrap: true,
+            )
           ],
         ),
       );

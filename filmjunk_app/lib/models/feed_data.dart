@@ -7,7 +7,6 @@ class FeedData {
    String url;
    String description;
    DateTime datetime;
-   String description;
   // final List<LocationFact> facts;
 
   FeedData(this.guid, this.title, this.url,this.description,this.datetime);
@@ -17,7 +16,6 @@ class FeedData {
     url = item.link;
     description = item.description;
     datetime = item.pubDate;
-    description = item.description;
   }
   static FeedData ParseFeedRSS(RssItem item) {
     String title = item.title.toString();

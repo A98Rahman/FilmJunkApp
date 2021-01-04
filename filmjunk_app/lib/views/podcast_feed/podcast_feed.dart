@@ -18,6 +18,7 @@ class PodcastFeed extends StatefulWidget {
 class _PodcastFeedState extends State<PodcastFeed> {
   String _nowPlaying = '<No podcast selected>';
   String _url = "";
+  String _description = "";
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
   int _currentSeekValue = 0;
@@ -31,7 +32,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
-    mediaControl = MediaControls(_nowPlaying, _url, false, 0);
+    mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
   }
 
   _refresh() async {
@@ -73,6 +74,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
             return _buildRow(
                 feed[itemCount].title,
                 feed[itemCount].url,
+                feed[itemCount].description,
                 DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime)
             );
         },
@@ -81,7 +83,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
   }
 
   // Build and return the list item
-  Widget _buildRow(String title, String guid, String pubDate) {
+  Widget _buildRow(String title, String guid, String desc, String pubDate) {
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: 4.0
@@ -94,19 +96,19 @@ class _PodcastFeedState extends State<PodcastFeed> {
           icon: new Icon(Icons.info_outline),
           onPressed: () => _showToast('Info: $guid'),
         ),
-        onTap: () => _selectToPlay('$guid','$title'),
+        onTap: () => _selectToPlay('$guid','$title','$desc'),
       ),
     );
   } // _buildRow
 
   // Update the podcast playing
-  void _selectToPlay(String guid, String title) {
+  void _selectToPlay(String guid, String title, String desc) {
     setState(() {
       _nowPlaying = title;
       _currentSeekValue = 0;
       mediaControl.Dispose();
       mediaControl = null;
-      mediaControl = MediaControls(title, guid, true, 0);
+      mediaControl = MediaControls(title, guid, desc, true, 0);
 
     });
   }
