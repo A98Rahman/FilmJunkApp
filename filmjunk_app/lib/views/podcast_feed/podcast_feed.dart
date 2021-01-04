@@ -8,7 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../MediaPlayer.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class PodcastFeed extends StatefulWidget {
   @override
@@ -20,7 +19,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
   String _url = "";
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
-  double _currentSeekValue = 40;
+  double _currentSeekValue = 0;
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
@@ -99,8 +98,10 @@ class _PodcastFeedState extends State<PodcastFeed> {
     setState(() {
       _nowPlaying = title;
       _currentSeekValue = 0.0;
-      mediaControl =  null;
+      mediaControl.Dispose();
+      mediaControl = null;
       mediaControl = MediaControls(title, guid, true, 0.0);
+
     });
   }
 

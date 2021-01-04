@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +12,12 @@ class MediaControls extends StatefulWidget {
   String _url;
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
-  double _currentSeekValue;
-  AudioPlayer player;
+  double _currentSeekValue=0;
+  AudioPlayer player = AudioPlayer();
+
+  Dispose(){
+    this.player.dispose();
+  }
 
 
   MediaControls(String nowPlaying, String url, bool isPlay,
@@ -22,7 +28,7 @@ class MediaControls extends StatefulWidget {
       this._currentSeekValue = currentSeekVal;
   }
 
-  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_isPlay,_currentSeekValue);
+  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_isPlay,_currentSeekValue, player);
 }
   class _MediaControlsState extends State<MediaControls> {
 
@@ -30,26 +36,35 @@ class MediaControls extends StatefulWidget {
     String _url;
     IconData playPauseIcon = Icons.play_arrow;
     bool _isPlay;
-    double _currentSeekValue;
+    double _currentSeekValue=0;
     AudioPlayer player;
+    // ignore: close_sinks
+
 
     _MediaControlsState(String nowPlaying, String url, bool isPlay,
-        double currentSeekVal){
-
+        double currentSeekVal, AudioPlayer player){
+      StreamSubscription _positionSubscription;
       this._nowPlaying = nowPlaying;
       this._url = url;
       this._isPlay = isPlay;
-      this._currentSeekValue = currentSeekVal;
+      this.player = player;
+    //   stream() {
+    //     _positionSubscription = player.onAudioPositionChanged.listen((p) {
+    //       setState(() => _currentSeekValue = p.inSeconds as double);
+    //       print(p.inSeconds);
+    //       // You should add your code here
+    //       }
+    //
+    // );
+    // }
     }
 
     void initState() {
       super.initState();
       UrlConstants.isConnected(context);
       print('');
-      player = AudioPlayer();
       play();
     }
-
 
 
     play() async {
@@ -103,7 +118,7 @@ class MediaControls extends StatefulWidget {
               ),
             ),
             Slider( // The seek bar for playback
-              value: player.onDurationChanged,
+              value: _currentSeekValue,
               activeColor: Colors.white,
               min: 0,
               max: 100,
@@ -150,6 +165,7 @@ class MediaControls extends StatefulWidget {
         ),
       );
     }
+
 
 
   }
