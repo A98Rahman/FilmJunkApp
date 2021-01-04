@@ -7,6 +7,8 @@ import 'package:filmjunk_app/controllers/feed_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../MediaPlayer.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class PodcastFeed extends StatefulWidget {
   @override
@@ -15,18 +17,21 @@ class PodcastFeed extends StatefulWidget {
 
 class _PodcastFeedState extends State<PodcastFeed> {
   String _nowPlaying = '<No podcast selected>';
+  String _url = "";
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
   double _currentSeekValue = 40;
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
+  MediaControls mediaControl;
 
   void initState() {
     super.initState();
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
+    mediaControl = MediaControls(_nowPlaying, _url, false, 0);
   }
 
   _refresh() async {
@@ -68,7 +73,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
         itemBuilder: (BuildContext context, int itemCount) {
             return _buildRow(
                 feed[itemCount].title,
-                feed[itemCount].guid,
+                feed[itemCount].url,
                 DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime)
             );
         },
@@ -85,15 +90,17 @@ class _PodcastFeedState extends State<PodcastFeed> {
         icon: new Icon(Icons.info_outline),
         onPressed: () => _showToast('Info: $guid'),
       ),
-      onTap: () => _selectToPlay('$title'),
+      onTap: () => _selectToPlay('$guid','$title'),
     );
   } // _buildRow
 
   // Update the podcast playing
-  void _selectToPlay(String p) {
+  void _selectToPlay(String guid, String title) {
     setState(() {
-      _nowPlaying = p;
+      _nowPlaying = title;
       _currentSeekValue = 0.0;
+      mediaControl =  null;
+      mediaControl = MediaControls(title, guid, true, 0.0);
     });
   }
 
@@ -112,21 +119,6 @@ class _PodcastFeedState extends State<PodcastFeed> {
   } // _showToast
 
 
-  // Toggle play/pause button
-  void _togglePlayPause() {
-    setState(() {
-      if (_isPlay == false) {
-        _isPlay = true;
-        _showToast('Now playing');
-        playPauseIcon = Icons.pause;
-      }
-      else {
-        _isPlay = false;
-        _showToast('Paused');
-        playPauseIcon = Icons.play_arrow;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +183,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
               SoundboardHome(),
             ],
           ),
-          floatingActionButton: ControlsFAB(),
+          floatingActionButton: ControlsFAB(mediaControl),
         ),
     );
     // throw UnimplementedError();
@@ -222,13 +214,17 @@ class _PodcastFeedState extends State<PodcastFeed> {
 }
 
 class ControlsFAB extends StatelessWidget {
+  MediaControls _mPlayer;
+
+  ControlsFAB(this._mPlayer);
+
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () {
         showModalBottomSheet(
           context: context,
-          builder: (context) => MediaControls(),
+          builder: (context) => _mPlayer,
         );
       },
       icon: Icon(Icons.play_arrow),
@@ -237,81 +233,6 @@ class ControlsFAB extends StatelessWidget {
   }
 }
 
-class MediaControls extends StatelessWidget {
-  String _nowPlaying = '<No podcast selected>';
-  IconData playPauseIcon = Icons.play_arrow;
-  bool _isPlay = false;
-  double _currentSeekValue = 40;
-
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
-    return Container( // The persistent player at the bottom of the page
-      padding: EdgeInsets.all(16.0),
-      height: 200.0,
-      width: width,
-      color: Colors.blue,
-      child: Column(
-        children: [
-          Text( // The title of the podcast being played
-            _nowPlaying,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-          Slider( // The seek bar for playback
-            value: _currentSeekValue,
-            activeColor: Colors.white,
-            min: 0,
-            max: 100,
-            // onChanged: (double value) {
-            //   setState(() {
-            //     _currentSeekValue = value;
-            //   });
-            // },
-          ),
-          Row( // Button controls for the player
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CircleAvatar( // Previous button
-                radius: 20,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_outlined,
-                    color: Colors.white,
-                  ),
-                  // onPressed: () => _showToast("previous")
-                ),),
-              ),
-              CircleAvatar( // Play/Pause button
-                radius: 30,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                      playPauseIcon),
-                  // onPressed: () => _togglePlayPause()
-                )),
-              ),
-              CircleAvatar(
-                radius: 20,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    color: Colors.white,
-                  ),
-                  // onPressed: () => _showToast("next")
-                ),),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;

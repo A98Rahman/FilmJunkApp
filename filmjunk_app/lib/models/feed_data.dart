@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:webfeed/webfeed.dart';
 
 class FeedData {
@@ -17,6 +18,7 @@ class FeedData {
   static FeedData ParseFeedRSS(RssItem item) {
     String title = item.title.toString();
     String url = item.link.toString();
+    print(url);
     String guid = item.guid.toString();
     DateTime datetime = item.pubDate;
     return new FeedData(guid, title, url,datetime);
