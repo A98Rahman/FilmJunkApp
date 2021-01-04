@@ -5,15 +5,17 @@ class FeedData {
    String guid;
    String title;
    String url;
+   String description;
    DateTime datetime;
    String description;
   // final List<LocationFact> facts;
 
-  FeedData(this.guid, this.title, this.url,this.datetime);
+  FeedData(this.guid, this.title, this.url,this.description,this.datetime);
   FeedData.from(RssItem item){
     guid = item.guid;
     title = item.title;
     url = item.link;
+    description = item.description;
     datetime = item.pubDate;
     description = item.description;
   }
@@ -23,7 +25,8 @@ class FeedData {
     print(url);
     String guid = item.guid.toString();
     DateTime datetime = item.pubDate;
-    return new FeedData(guid, title, url,datetime);
+    String description = item.description;
+    return new FeedData(guid, title, url,description,datetime);
   }
 
   FeedData fetchByID(int locationID) {
