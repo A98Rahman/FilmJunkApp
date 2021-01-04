@@ -10,7 +10,7 @@ void main() {
     routes: {
       '/':(context) => PodcastFeed(),
       '/soundboard': (context) => SoundboardHome(),
-      '/PatreonForm':(context) => PatreonUrlForm()
+      '/PatreonForm':(context) => PatreonUrlForm(),
     },
     // home: PodcastFeed(),
     theme: basicTheme(),

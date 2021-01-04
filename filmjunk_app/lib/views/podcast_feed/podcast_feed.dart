@@ -1,5 +1,6 @@
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:filmjunk_app/models/feed_data.dart';
+import 'package:filmjunk_app/util/style.dart';
 import 'package:filmjunk_app/views/podcast_feed/PatreonUrlForm.dart';
 import 'package:filmjunk_app/views/soundboard_home.dart';
 import 'package:flutter/material.dart';
@@ -39,13 +40,12 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
   patreonFeed() {
     Navigator.push(
-      context, MaterialPageRoute(builder: (context) => PatreonUrlForm()),)
-        .then((value) =>
+      context, MaterialPageRoute(builder: (context) => PatreonUrlForm()),
+    ).then((value) =>
         setState(() {
           _refresh();
         }));
   }
-
 
   Future<String> feedSource() async {
     //Checks the Shared preferences to see if the feed will be called from Patreon Link or the Regular link.
@@ -77,14 +77,20 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
   // Build and return the list item
   Widget _buildRow(String title, String guid, String pubDate) {
-    return ListTile(
-      title: Text('Podcast $title'),
-      subtitle: Text('Published: $pubDate'),
-      trailing: new IconButton(
-        icon: new Icon(Icons.info_outline),
-        onPressed: () => _showToast('Info: $guid'),
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 4.0
       ),
-      onTap: () => _selectToPlay('$title'),
+      color: basicTheme().primaryColor,
+      child: ListTile(
+        title: Text('Podcast $title'),
+        subtitle: Text('Published: $pubDate'),
+        trailing: new IconButton(
+          icon: new Icon(Icons.info_outline),
+          onPressed: () => _showToast('Info: $guid'),
+        ),
+        onTap: () => _selectToPlay('$title'),
+      ),
     );
   } // _buildRow
 
@@ -138,9 +144,18 @@ class _PodcastFeedState extends State<PodcastFeed> {
                 .textTheme
                 .headline1),
             actions: [
-              IconButton(icon: Icon(Icons.search), onPressed: () {
-                showSearch(context: context, delegate: FeedSearch(list));
-              }),
+              IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    showSearch(context: context, delegate: FeedSearch(list));
+                  }),
+              IconButton(
+                icon: Icon(Icons.monetization_on),
+                onPressed: () {
+                  patreonFeed();
+                },
+                tooltip: 'Patreon Feed',
+              ),
             ],
             bottom: TabBar (
               tabs: <Widget>[
@@ -151,6 +166,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
                   text: 'Soundboard',
                 ),
               ],
+              indicatorColor: basicTheme().accentColor,
             ),
           ),
           body: TabBarView (
@@ -232,6 +248,8 @@ class ControlsFAB extends StatelessWidget {
       },
       icon: Icon(Icons.play_arrow),
       label: Text('Now Playing'),
+      backgroundColor: basicTheme().accentColor,
+      foregroundColor: Colors.white,
     );
   }
 }
@@ -252,7 +270,7 @@ class MediaControls extends StatelessWidget {
       padding: EdgeInsets.all(16.0),
       height: 200.0,
       width: width,
-      color: Colors.blue,
+      color: basicTheme().accentColor,
       child: Column(
         children: [
           Text( // The title of the podcast being played

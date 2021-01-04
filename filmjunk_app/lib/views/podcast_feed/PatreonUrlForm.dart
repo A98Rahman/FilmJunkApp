@@ -1,3 +1,4 @@
+import 'package:filmjunk_app/util/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +7,12 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
-
-
 class PatreonUrlForm extends StatefulWidget {
   @override
   PatreonUrlFormState createState() {
     return PatreonUrlFormState();
   }
 }
-
 
 // This class holds data related to the form.
 class PatreonUrlFormState extends State<PatreonUrlForm> {
@@ -30,7 +27,8 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
 
   savePatreonRss(String rssURL) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('patreon_rss', rssURL); //Saving patreon_rss in shared preferences so that on restart the user would not need to enter the link again.
+    await prefs.setString('patreon_rss',
+        rssURL); //Saving patreon_rss in shared preferences so that on restart the user would not need to enter the link again.
   }
 
   @override
@@ -43,66 +41,82 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
-    return Scaffold(body:
-        Container(child: Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            controller: myController,
-            decoration: InputDecoration(labelText: 'Patreon RSS Link'),
-            keyboardType: TextInputType.url,
-            validator: (value) {
-              final isValid = validate(value).then((valid) {
-                if(valid){
-                  debugPrint("VALID");
-                  _patreonURL = myController.text;
-                  savePatreonRss(value);
-                  Navigator.pop(context);
-                  return "Parsing...";
-                }
-                else{
-                  debugPrint("INVALID");
-                  return "Please enter a Patreon URL";
-                }
-              });
-              return "";
-            },
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+              'Connect Patreon Feed',
+              style: Theme.of(context).textTheme.headline1
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, or false
-                // otherwise.
-                if (_formKey.currentState.validate()) {
-                  _patreonURL = myController.text;
-                  savePatreonRss(_patreonURL);
-                  Navigator.pop(context);
-                }
-              },
-              child: Text('Submit'),
-            ),
-          ),
-          new RichText(
-            text: new TextSpan(
-              children: [
-                new TextSpan(
-                  text: 'Patreon RSS Link',
-                  style: new TextStyle(color: Colors.blue),
-                  recognizer: new TapGestureRecognizer()
-                    ..onTap = () { launch('https://support.patreon.com/hc/en-us/articles/212055866-Subscribe-to-your-Audio-RSS-link-on-the-Patreon-app');
-                    },
+        ),
+        body: Container(
+          color: Colors.grey[900],
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: myController,
+                      decoration: InputDecoration(
+                        labelText: 'Patreon RSS Link',
+                      ),
+                      keyboardType: TextInputType.url,
+                      validator: (value) {
+                        final isValid = validate(value).then((valid) {
+                          if (valid) {
+                            debugPrint("VALID");
+                            _patreonURL = myController.text;
+                            savePatreonRss(value);
+                            Navigator.pop(context);
+                            return "Parsing...";
+                          } else {
+                            debugPrint("INVALID");
+                            return "Please enter a Patreon URL";
+                          }
+                        }
+                        );
+                        return "";
+                        },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Validate returns true if the form is valid, or false
+                          // otherwise.
+                          if (_formKey.currentState.validate()) {
+                            _patreonURL = myController.text;
+                            savePatreonRss(_patreonURL);
+                            Navigator.pop(context);
+                          }
+                          },
+                        child: Text('Connect'),
+                        style: ElevatedButton.styleFrom(
+                          primary: basicTheme().accentColor,
+                        ),
+                      ),
+                    ),
+                    new RichText(
+                      text: new TextSpan(
+                        children: [
+                          new TextSpan(
+                            text: 'Click here to see how to get your Patreon RSS link',
+                            style: new TextStyle(color: Colors.blue),
+                            recognizer: new TapGestureRecognizer()
+                              ..onTap = () {
+                              launch(
+                                'https://support.patreon.com/hc/en-us/articles/212055866-Subscribe-to-your-Audio-RSS-link-on-the-Patreon-app');
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          ],
-    ),
-        )
-        )
-    );
+              ),
+            )));
   }
 
   Future<bool> validate(String value) async {
@@ -112,13 +126,9 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
       var response = await client.get(value);
       var channel = RssFeed.parse(response.body);
       return true;
-    }
-    catch(e){
+    } catch (e) {
       print("$e");
       return false;
     }
   }
-
-
-
 }
