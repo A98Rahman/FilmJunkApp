@@ -3,6 +3,7 @@ import 'package:filmjunk_app/custom_widgets/soundboard_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/soundboard_data.dart';
+import 'package:filmjunk_app/global_settings.dart';
 
 class SoundboardHome extends StatefulWidget {
   @override
@@ -17,8 +18,18 @@ class _SoundboardHomeState extends State<SoundboardHome> {
 
   void initState() {
     super.initState();
+    checkConnectionState();
     print('');
     soundboard = _refresh();
+  }
+  checkConnectionState() async {
+    UrlConstants.isConnected(context).then((stat) {
+      if(!stat){
+        final snackBar = SnackBar(
+          content: Text('Connection failed: Check your connectivity.'),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+    }});
   }
 
   _refresh() async {
@@ -46,6 +57,7 @@ class _SoundboardHomeState extends State<SoundboardHome> {
   Widget _buildRow(String name, String url) {
     return SoundboardTile(name, url);
   } // _buildRow
+
 
 
   @override

@@ -24,6 +24,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
   void initState() {
     super.initState();
+    UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
   }
@@ -369,5 +370,8 @@ class FeedSearch extends SearchDelegate<FeedData> {
       ),
     );
   }
+
+  //Checks for connectivity when the widget is built and not before we play a sound
+
 //
 }

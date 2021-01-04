@@ -15,7 +15,7 @@ class SoundboardTile extends StatelessWidget {
     if (result == 1) {
       //Success
     } else{
-      //Not Succesful, display a toast saying that its unavailable.
+      //Failed to find the link
     }
   }
 
@@ -46,7 +46,7 @@ class SoundboardTile extends StatelessWidget {
             ),
           ),
           Text(
-            _title,
+            getTitle(_title),
             style: Theme.of(context).textTheme.bodyText1,
             textAlign: TextAlign.center,
           ),
@@ -54,5 +54,13 @@ class SoundboardTile extends StatelessWidget {
       ),
     );
   }
+
+  String getTitle(String title){
+    String stripped = title.split(".")[0]; //Strips the .mp3 extension of the file name
+    return stripped.replaceAll("_", " "); //In the future if you space the filename ith an underscore (_) then this will replace it with space and make it look pretty
+  }
+
+
+
 
 }
