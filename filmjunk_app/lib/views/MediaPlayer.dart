@@ -38,7 +38,7 @@ class MediaControls extends StatefulWidget {
     bool _isPlay;
     int _currentSeekValue=0;
     AudioPlayer player;
-    int _duration=10000000000000;
+    int _duration=10;
     // ignore: close_sinks
 
 
@@ -71,18 +71,24 @@ class MediaControls extends StatefulWidget {
     play() async {
       print(this._url + " ////////////////////////////////////////");
       int result = await player.play(this._url);
-      if (result !=
-          1) { //If the result == 1 then there were no issues while play back
-        final snackBar = SnackBar(
-          content: Text('Nothing to play.'),
-        );
-        // Scaffold.of(context).showSnackBar(snackBar);
+      if (result == 1) { //If the result == 1 then there were no issues while play back
+
+        player.onAudioPositionChanged.listen((Duration p) { //Get the position stream for the slider
+          print('Current position: $p');
+          setState(() => _currentSeekValue = p.inSeconds);
+        });
+
+        player.onDurationChanged.listen((Duration d) {
+          print('Max duration: $d');
+          setState(() => _duration = d.inSeconds);
+        });
+
+        // _duration = await player.getDuration(); //Get the duration of the podcast.
+        // print("////////////////////////////////////////// DURATION: " + _duration.toString());
+
+      }else {
+
       }
-       player.onAudioPositionChanged.listen((Duration  p) {
-      print('Current position: $p');
-          setState(() => _currentSeekValue = p.inMilliseconds);
-    });
-      _duration = await player.getDuration();
     }
 
 // Toggle play/pause button
@@ -131,6 +137,7 @@ class MediaControls extends StatefulWidget {
               onChanged: (double value) {
                 setState(() {
                   _currentSeekValue = value as int;
+                 
                 });
               },
             ),
