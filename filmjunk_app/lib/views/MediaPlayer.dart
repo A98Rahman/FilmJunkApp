@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:filmjunk_app/global_settings.dart';
+import 'package:filmjunk_app/util/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,8 +21,7 @@ class MediaControls extends StatefulWidget {
   }
 
 
-  MediaControls(String nowPlaying, String url, bool isPlay,
-      double currentSeekVal) {
+  MediaControls(String nowPlaying, String url, bool isPlay, double currentSeekVal) {
       this._nowPlaying = nowPlaying;
       this._url = url;
       this._isPlay = isPlay;
@@ -107,7 +107,7 @@ class MediaControls extends StatefulWidget {
         padding: EdgeInsets.all(16.0),
         height: 200.0,
         width: width,
-        color: Colors.blue,
+        color: basicTheme().accentColor,
         child: Column(
           children: [
             Text( // The title of the podcast being played

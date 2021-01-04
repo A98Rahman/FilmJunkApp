@@ -106,7 +106,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
       _currentSeekValue = 0.0;
       mediaControl.Dispose();
       mediaControl = null;
-      mediaControl = MediaControls(title, guid, true, 0.0);
+      mediaControl = MediaControls(title, guid, true, 0.0,);
 
     });
   }
@@ -169,12 +169,12 @@ class _PodcastFeedState extends State<PodcastFeed> {
                 children: <Widget>[
                   //////////////////////////////////////////////////////////////////////////
                   // TODO Only for testing, remove them when designing the UI.
-                  TextButton(
-                      child: Text("Patreon Feed"),
-                      onPressed: () {
-                        patreonFeed();
-                      } //The router will help us navigate through the views in the app.
-                  ),
+                  // TextButton(
+                  //     child: Text("Patreon Feed"),
+                  //     onPressed: () {
+                  //       patreonFeed();
+                  //     } //The router will help us navigate through the views in the app.
+                  // ),
                   // TextButton(
                   //     child: Text("Soundboard"),
                   //     onPressed: () {

@@ -1,3 +1,4 @@
+import 'package:filmjunk_app/util/style.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -32,7 +33,7 @@ class SoundboardTile extends StatelessWidget {
             child: ClipOval(
               child: Material(
                 elevation: 8.0,
-                color: Colors.blue,
+                color: basicTheme().accentColor,
                 child: InkWell(
                   splashColor: Colors.lightBlueAccent,
                   child: SizedBox(
@@ -45,10 +46,13 @@ class SoundboardTile extends StatelessWidget {
               )
             ),
           ),
-          Text(
-            getTitle(_title),
-            style: Theme.of(context).textTheme.bodyText1,
-            textAlign: TextAlign.center,
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text(
+              getTitle(_title),
+              style: Theme.of(context).textTheme.bodyText1,
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),
