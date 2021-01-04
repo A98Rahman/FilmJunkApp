@@ -21,14 +21,13 @@ class MediaControls extends StatefulWidget {
     this.player.dispose();
   }
 
-
   MediaControls(String nowPlaying, String url, String description, bool isPlay,
       int currentSeekVal) {
-      this._nowPlaying = nowPlaying;
-      this._url = url;
-      this._description = description;
-      this._isPlay = isPlay;
-      this._currentSeekValue = currentSeekVal;
+      // this._nowPlaying = nowPlaying;
+      // this._url = url;
+      // this._description = description;
+      // this._isPlay = isPlay;
+      // this._currentSeekValue = currentSeekVal;
   }
 
   _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_description,_isPlay,_currentSeekValue, player);
@@ -121,7 +120,6 @@ class MediaControls extends StatefulWidget {
           .width;
       return Container( // The persistent player at the bottom of the page
         padding: EdgeInsets.all(16.0),
-        height: 200.0,
         width: width,
         color: basicTheme().accentColor,
         child: Column(
@@ -136,18 +134,29 @@ class MediaControls extends StatefulWidget {
             Slider( // The seek bar for playback
               value:  _currentSeekValue.toDouble(),
               activeColor: Colors.white,
+              inactiveColor: Colors.grey,
               min: 0,
               max: _duration.toDouble(),
               onChanged: (double value) {
                 setState(() {
                   _currentSeekValue = value as int;
-                 
+
                 });
               },
             ),
             Row( // Button controls for the player
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                CircleAvatar( // Previous button
+                  radius: 20,
+                  child: Center(child: IconButton(
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                    ),
+                    // onPressed: () => _showToast("previous")
+                  ),),
+                ),
                 CircleAvatar( // Previous button
                   radius: 20,
                   child: Center(child: IconButton(
@@ -178,10 +187,6 @@ class MediaControls extends StatefulWidget {
                 ),
               ],
             ),
-            Text(
-              _description,
-              softWrap: true,
-            )
           ],
         ),
       );

@@ -1,6 +1,7 @@
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:filmjunk_app/models/feed_data.dart';
 import 'package:filmjunk_app/util/style.dart';
+import 'package:filmjunk_app/views/audio_control.dart';
 import 'package:filmjunk_app/views/podcast_feed/PatreonUrlForm.dart';
 import 'package:filmjunk_app/views/soundboard_home.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
       padding: EdgeInsets.symmetric(
         vertical: 4.0
       ),
-      color: basicTheme().primaryColor,
+      color: basicTheme().backgroundColor,
       child: ListTile(
         title: Text('Podcast $title'),
         subtitle: Text('Published: $pubDate'),
@@ -169,21 +170,6 @@ class _PodcastFeedState extends State<PodcastFeed> {
             children: [
               Column(
                 children: <Widget>[
-                  //////////////////////////////////////////////////////////////////////////
-                  // TODO Only for testing, remove them when designing the UI.
-                  // TextButton(
-                  //     child: Text("Patreon Feed"),
-                  //     onPressed: () {
-                  //       patreonFeed();
-                  //     } //The router will help us navigate through the views in the app.
-                  // ),
-                  // TextButton(
-                  //     child: Text("Soundboard"),
-                  //     onPressed: () {
-                  //       Navigator.pushNamed(context, '/soundboard');
-                  //     } //The router will help us navigate through the views in the app.
-                  // ),
-                  //////////////////////////////////////////////////////////////////////////
                   FutureBuilder(
                     future: feedList,
                     builder: (BuildContext context,
@@ -202,58 +188,21 @@ class _PodcastFeedState extends State<PodcastFeed> {
               SoundboardHome(),
             ],
           ),
-          floatingActionButton: ControlsFAB(mediaControl),
+          bottomNavigationBar: Stack(
+            children: [
+              Wrap(
+                  children: <Widget>[
+                    AudioControl()
+                  ]
+              ),
+            ],
+          ),
         ),
     );
     // throw UnimplementedError();
   }
 
-  List<Widget> tabs = [
-    // FutureBuilder(
-    //   future: feedList,
-    //   builder: (BuildContext context,
-    //       AsyncSnapshot<dynamic> snapshot) {
-    //     if (!snapshot.hasData)
-    //       return Center(child: CircularProgressIndicator());
-    //     List items = snapshot.data;
-    //     return new Flexible(
-    //       fit: FlexFit.loose,
-    //       child: _buildFeed(items),
-    //     );
-    //   },
-    // ),
-    Container (
-      color: Colors.amber,
-    ),
-    Container (
-      child: SoundboardHome(),
-    )
-  ];
-
 }
-
-class ControlsFAB extends StatelessWidget {
-  MediaControls _mPlayer;
-
-  ControlsFAB(this._mPlayer);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => _mPlayer,
-        );
-      },
-      icon: Icon(Icons.play_arrow),
-      label: Text('Now Playing'),
-      backgroundColor: basicTheme().accentColor,
-      foregroundColor: Colors.white,
-    );
-  }
-}
-
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;

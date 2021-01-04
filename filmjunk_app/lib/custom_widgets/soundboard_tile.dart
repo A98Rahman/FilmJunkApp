@@ -35,7 +35,7 @@ class SoundboardTile extends StatelessWidget {
                 elevation: 8.0,
                 color: basicTheme().accentColor,
                 child: InkWell(
-                  splashColor: Colors.lightBlueAccent,
+                  splashColor: Colors.tealAccent,
                   child: SizedBox(
                     width: 56,
                     height: 56,

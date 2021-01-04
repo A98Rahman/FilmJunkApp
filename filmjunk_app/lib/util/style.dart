@@ -6,7 +6,7 @@ ThemeData basicTheme(){
   return base.copyWith(
     textTheme: _basicTextTheme(base.textTheme),
     primaryColor: Colors.black,
-    backgroundColor: Colors.red,
+    backgroundColor: Colors.grey[850],
     accentColor: Colors.teal[400],
   );
 
