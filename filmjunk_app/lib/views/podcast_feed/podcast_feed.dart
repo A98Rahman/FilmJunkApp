@@ -1,5 +1,7 @@
 import 'package:filmjunk_app/global_settings.dart';
 import 'package:filmjunk_app/models/feed_data.dart';
+import 'package:filmjunk_app/util/style.dart';
+import 'package:filmjunk_app/views/audio_control.dart';
 import 'package:filmjunk_app/views/podcast_feed/PatreonUrlForm.dart';
 import 'package:filmjunk_app/views/soundboard_home.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ class PodcastFeed extends StatefulWidget {
 class _PodcastFeedState extends State<PodcastFeed> {
   String _nowPlaying = '<No podcast selected>';
   String _url = "";
+  String _description = "";
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
   int _currentSeekValue = 0;
@@ -30,7 +33,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
-    mediaControl = MediaControls(_nowPlaying, _url, false, 0);
+    mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
   }
 
   _refresh() async {
@@ -44,13 +47,12 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
   patreonFeed() {
     Navigator.push(
-      context, MaterialPageRoute(builder: (context) => PatreonUrlForm()),)
-        .then((value) =>
+      context, MaterialPageRoute(builder: (context) => PatreonUrlForm()),
+    ).then((value) =>
         setState(() {
           _refresh();
         }));
   }
-
 
   Future<String> feedSource() async {
     //Checks the Shared preferences to see if the feed will be called from Patreon Link or the Regular link.
@@ -73,6 +75,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
             return _buildRow(
                 feed[itemCount].title,
                 feed[itemCount].url,
+                feed[itemCount].description,
                 DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime)
             );
         },
@@ -81,26 +84,32 @@ class _PodcastFeedState extends State<PodcastFeed> {
   }
 
   // Build and return the list item
-  Widget _buildRow(String title, String guid, String pubDate) {
-    return ListTile(
-      title: Text('Podcast $title'),
-      subtitle: Text('Published: $pubDate'),
-      trailing: new IconButton(
-        icon: new Icon(Icons.info_outline),
-        onPressed: () => _showToast('Info: $guid'),
+  Widget _buildRow(String title, String guid, String desc, String pubDate) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 4.0
       ),
-      onTap: () => _selectToPlay('$guid','$title'),
+      color: basicTheme().backgroundColor,
+      child: ListTile(
+        title: Text('Podcast $title'),
+        subtitle: Text('Published: $pubDate'),
+        trailing: new IconButton(
+          icon: new Icon(Icons.info_outline),
+          onPressed: () => _showToast('Info: $guid'),
+        ),
+        onTap: () => _selectToPlay('$guid','$title','$desc'),
+      ),
     );
   } // _buildRow
 
   // Update the podcast playing
-  void _selectToPlay(String guid, String title) {
+  void _selectToPlay(String guid, String title, String desc) {
     setState(() {
       _nowPlaying = title;
       _currentSeekValue = 0;
       mediaControl.Dispose();
       mediaControl = null;
-      mediaControl = MediaControls(title, guid, true, 0);
+      mediaControl = MediaControls(title, guid, desc, true, 0);
 
     });
   }
@@ -132,9 +141,18 @@ class _PodcastFeedState extends State<PodcastFeed> {
                 .textTheme
                 .headline1),
             actions: [
-              IconButton(icon: Icon(Icons.search), onPressed: () {
-                showSearch(context: context, delegate: FeedSearch(list));
-              }),
+              IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    showSearch(context: context, delegate: FeedSearch(list));
+                  }),
+              IconButton(
+                icon: Icon(Icons.monetization_on),
+                onPressed: () {
+                  patreonFeed();
+                },
+                tooltip: 'Patreon Feed',
+              ),
             ],
             bottom: TabBar (
               tabs: <Widget>[
@@ -145,27 +163,13 @@ class _PodcastFeedState extends State<PodcastFeed> {
                   text: 'Soundboard',
                 ),
               ],
+              indicatorColor: basicTheme().accentColor,
             ),
           ),
           body: TabBarView (
             children: [
               Column(
                 children: <Widget>[
-                  //////////////////////////////////////////////////////////////////////////
-                  // TODO Only for testing, remove them when designing the UI.
-                  TextButton(
-                      child: Text("Patreon Feed"),
-                      onPressed: () {
-                        patreonFeed();
-                      } //The router will help us navigate through the views in the app.
-                  ),
-                  // TextButton(
-                  //     child: Text("Soundboard"),
-                  //     onPressed: () {
-                  //       Navigator.pushNamed(context, '/soundboard');
-                  //     } //The router will help us navigate through the views in the app.
-                  // ),
-                  //////////////////////////////////////////////////////////////////////////
                   FutureBuilder(
                     future: feedList,
                     builder: (BuildContext context,
@@ -184,56 +188,21 @@ class _PodcastFeedState extends State<PodcastFeed> {
               SoundboardHome(),
             ],
           ),
-          floatingActionButton: ControlsFAB(mediaControl),
+          bottomNavigationBar: Stack(
+            children: [
+              Wrap(
+                  children: <Widget>[
+                    AudioControl()
+                  ]
+              ),
+            ],
+          ),
         ),
     );
     // throw UnimplementedError();
   }
 
-  List<Widget> tabs = [
-    // FutureBuilder(
-    //   future: feedList,
-    //   builder: (BuildContext context,
-    //       AsyncSnapshot<dynamic> snapshot) {
-    //     if (!snapshot.hasData)
-    //       return Center(child: CircularProgressIndicator());
-    //     List items = snapshot.data;
-    //     return new Flexible(
-    //       fit: FlexFit.loose,
-    //       child: _buildFeed(items),
-    //     );
-    //   },
-    // ),
-    Container (
-      color: Colors.amber,
-    ),
-    Container (
-      child: SoundboardHome(),
-    )
-  ];
-
 }
-
-class ControlsFAB extends StatelessWidget {
-  MediaControls _mPlayer;
-
-  ControlsFAB(this._mPlayer);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => _mPlayer,
-        );
-      },
-      icon: Icon(Icons.play_arrow),
-      label: Text('Now Playing'),
-    );
-  }
-}
-
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;

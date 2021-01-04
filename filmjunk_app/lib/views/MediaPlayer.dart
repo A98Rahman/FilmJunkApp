@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:filmjunk_app/global_settings.dart';
+import 'package:filmjunk_app/util/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,6 +11,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class MediaControls extends StatefulWidget {
   String _nowPlaying = '<No podcast selected>';
   String _url;
+  String _description;
   IconData playPauseIcon = Icons.play_arrow;
   bool _isPlay = false;
   int _currentSeekValue;
@@ -19,21 +21,22 @@ class MediaControls extends StatefulWidget {
     this.player.dispose();
   }
 
-
-  MediaControls(String nowPlaying, String url, bool isPlay,
+  MediaControls(String nowPlaying, String url, String description, bool isPlay,
       int currentSeekVal) {
-      this._nowPlaying = nowPlaying;
-      this._url = url;
-      this._isPlay = isPlay;
-      this._currentSeekValue = currentSeekVal;
+      // this._nowPlaying = nowPlaying;
+      // this._url = url;
+      // this._description = description;
+      // this._isPlay = isPlay;
+      // this._currentSeekValue = currentSeekVal;
   }
 
-  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_isPlay,_currentSeekValue, player);
+  _MediaControlsState createState() => _MediaControlsState(_nowPlaying,_url,_description,_isPlay,_currentSeekValue, player);
 }
   class _MediaControlsState extends State<MediaControls> {
 
     String _nowPlaying = '<No podcast selected>';
     String _url;
+    String _description;
     IconData playPauseIcon = Icons.play_arrow;
     bool _isPlay;
     int _currentSeekValue=0;
@@ -42,7 +45,7 @@ class MediaControls extends StatefulWidget {
     // ignore: close_sinks
 
 
-    _MediaControlsState(String nowPlaying, String url, bool isPlay,
+    _MediaControlsState(String nowPlaying, String url, String description, bool isPlay,
         int currentSeekVal, AudioPlayer player){
       this._nowPlaying = nowPlaying;
       this._url = url;
@@ -111,9 +114,8 @@ class MediaControls extends StatefulWidget {
           .width;
       return Container( // The persistent player at the bottom of the page
         padding: EdgeInsets.all(16.0),
-        height: 200.0,
         width: width,
-        color: Colors.blue,
+        color: basicTheme().accentColor,
         child: Column(
           children: [
             Text( // The title of the podcast being played
@@ -130,18 +132,29 @@ class MediaControls extends StatefulWidget {
            /* Slider( // The seek bar for playback
               value:  _currentSeekValue.toDouble(),
               activeColor: Colors.white,
+              inactiveColor: Colors.grey,
               min: 0,
               max: _duration.toDouble(),
               onChanged: (double value) {
                 setState(() {
                   _currentSeekValue = value as int;
-                 
+
                 });
               },
             ),*/
             Row( // Button controls for the player
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                CircleAvatar( // Previous button
+                  radius: 20,
+                  child: Center(child: IconButton(
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                    ),
+                    // onPressed: () => _showToast("previous")
+                  ),),
+                ),
                 CircleAvatar( // Previous button
                   radius: 20,
                   child: Center(child: IconButton(
