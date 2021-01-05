@@ -206,7 +206,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
               IconButton(
                   icon: Icon(Icons.search),
                   onPressed: () {
-                    showSearch(context: context, delegate: FeedSearch(list));
+                    showSearch(context: context, delegate: FeedSearch(list,_selectToPlay));
                   }),
               IconButton(
                 icon: Icon(Icons.monetization_on),
@@ -271,8 +271,8 @@ class _PodcastFeedState extends State<PodcastFeed> {
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;
-
-  FeedSearch(this.feeditems);
+  Function func;
+  FeedSearch(this.feeditems, this.func);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -280,8 +280,6 @@ class FeedSearch extends SearchDelegate<FeedData> {
         icon: Icon(Icons.clear),
         onPressed: () {
           query = '';
-
-          ///The logic to start playing the selected podcast should go here.
         }
     ),
     ];
@@ -320,6 +318,8 @@ class FeedSearch extends SearchDelegate<FeedData> {
           result.map((data) =>
               ListTile(title: Text(data.title), onTap: () {
                 query = data.title;
+                func(data.url,data.title,data.description,0);
+                Navigator.pop(context);
               }))
               .toList()
 
