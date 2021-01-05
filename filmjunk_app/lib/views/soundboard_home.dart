@@ -69,7 +69,10 @@ class _SoundboardHomeState extends State<SoundboardHome> {
           builder:(BuildContext context,
               AsyncSnapshot<dynamic> snapshot) {
             if(!snapshot.hasData)
-              return CircularProgressIndicator();
+              return Padding(
+                padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator()
+              );
             List items = snapshot.data;
             return new  GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                 shrinkWrap: true,

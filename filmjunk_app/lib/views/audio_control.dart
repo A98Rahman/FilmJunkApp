@@ -33,6 +33,7 @@ class AudioControlState extends State<AudioControl> {
   IconData playPauseButton;
   String _nowPlaying = '<No podcast selected>';
   String _url;
+  String _description = '<A currently playing podcast will have its description here>';
   int _currentSeekValue=1;
   int _duration=1;
   AudioPlayer player = AudioPlayer();
@@ -45,9 +46,10 @@ class AudioControlState extends State<AudioControl> {
     this.player = player;
   }*/
 
-  void statify(String nP, String url){
+  void statify(String nP, String url, String desc){
     _nowPlaying = nP;
     _url = url;
+    _description = desc;
     playing = true;
     play();
     if(playing)
@@ -92,7 +94,6 @@ class AudioControlState extends State<AudioControl> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -101,7 +102,7 @@ class AudioControlState extends State<AudioControl> {
           top: Radius.circular(20.0),
           bottom: Radius.zero,
         ),
-        color: basicTheme().accentColor,
+        color: basicTheme().primaryColor,
       ),
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -112,12 +113,19 @@ class AudioControlState extends State<AudioControl> {
               color: Colors.white,
               fontSize: 20,
             ),
-          ),Center(child:
-          new LinearPercentIndicator(
-            width: MediaQuery.of(context).size.width *(6/7),
-            lineHeight: 5,
-            percent: _currentSeekValue/_duration,
-          )),
+          ),
+          Center(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: LinearPercentIndicator(
+                  backgroundColor: Colors.white,
+                  progressColor: basicTheme().accentColor,
+                  width: MediaQuery.of(context).size.width *(6/7),
+                  lineHeight: 5,
+                  percent: _currentSeekValue/_duration,
+                ),
+              )
+          ),
           /*Slider( // The seek bar for playback
             min: 0,
             max: 200,
@@ -132,17 +140,19 @@ class AudioControlState extends State<AudioControl> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CircleAvatar( // Previous button
+                backgroundColor: basicTheme().accentColor,
                 radius: 20,
                 child: Center(child: IconButton(
                   icon: Icon(
                     Icons.info_outline,
                     color: Colors.white,
                   ),
-                  // onPressed: () => _showToast("previous")
+                  onPressed: () => _showPodcastInfo(_nowPlaying,_description),
                 ),),
               ),
               CircleAvatar( // Previous button
                 radius: 20,
+                backgroundColor: basicTheme().accentColor,
                 child: Center(child: IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios_outlined,
@@ -152,14 +162,20 @@ class AudioControlState extends State<AudioControl> {
                 ),),
               ),
               CircleAvatar( // Play/Pause button
+                backgroundColor: basicTheme().accentColor,
                 radius: 30,
-                child: Center(child: IconButton(
-                    icon: Icon(
-                        playPauseButton),
-                    onPressed: () => _playToggle()
-                )),
+                child: Center(
+                    child: IconButton(
+                        icon: Icon(
+                            playPauseButton
+                        ),
+                        onPressed: () => _playToggle(),
+                      color: Colors.white,
+                    )
+                ),
               ),
               CircleAvatar(
+                backgroundColor: basicTheme().accentColor,
                 radius: 20,
                 child: Center(child: IconButton(
                   icon: Icon(
@@ -173,6 +189,21 @@ class AudioControlState extends State<AudioControl> {
           ),
         ],
       ),
+    );
+  }
+
+  _showPodcastInfo(String infoTitle, String infoDescription) {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(infoTitle),
+            content: SingleChildScrollView(
+              child: Text(infoDescription),
+            ),
+          );
+        }
     );
   }
 
