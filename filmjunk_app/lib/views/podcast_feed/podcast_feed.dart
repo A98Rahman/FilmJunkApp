@@ -7,6 +7,7 @@ import 'package:filmjunk_app/views/soundboard_home.dart';
 import 'package:flutter/material.dart';
 import 'package:filmjunk_app/controllers/feed_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../MediaPlayer.dart';
@@ -92,6 +93,9 @@ class _PodcastFeedState extends State<PodcastFeed> {
   }
 
   // Build and return the list item
+  Widget _buildRow(String title, String guid, String desc, String pubDate) {
+    final rssDesc = parse(desc);
+    final String parsedDesc = parse(rssDesc.body.text).documentElement.text;
   Widget _buildRow(String title, String url, String desc, String pubDate, int index) {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -103,18 +107,44 @@ class _PodcastFeedState extends State<PodcastFeed> {
         subtitle: Text('Published: $pubDate'),
         trailing: new IconButton(
           icon: new Icon(Icons.info_outline),
-          onPressed: () => _showToast('Info: $url'),
+          onPressed: () => _showPodcastInfo(title, parsedDesc),
         ),
-        onTap: () => _selectToPlay('$url','$title','$desc',index),
+        onTap: () => _selectToPlay('$guid','$title','$parsedDesc'),
       ),
     );
   } // _buildRow
+
+  _showPodcastInfo(String infoTitle, String infoDescription) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(infoTitle),
+          content: SingleChildScrollView(
+            child: Text(infoDescription),
+          ),
+        );
+      }
+    );
+  }
 
   // Update the podcast playing
   void _selectToPlay(String guid, String title, String desc, int index) {
     setState(() {
           CURR_IDX = index;
         _key.currentState.statify(title, guid);
+      _nowPlaying = title;
+      _currentSeekValue = 0;
+      _description = desc;
+      // setState(() {
+        //audioControl.Dispose();
+        //audioControl = null;
+        // audioControl = new AudioControl(title, guid, true);
+
+        _key.currentState.statify(title, guid, desc);
+      // });
+
     });
   }
 

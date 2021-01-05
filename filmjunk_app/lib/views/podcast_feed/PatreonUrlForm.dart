@@ -49,7 +49,7 @@ class PatreonUrlFormState extends State<PatreonUrlForm> {
           ),
         ),
         body: Container(
-          color: Colors.grey[900],
+          color: Colors.grey[650],
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
