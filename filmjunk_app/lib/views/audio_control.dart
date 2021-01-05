@@ -26,6 +26,7 @@ class AudioControlState extends State<AudioControl> {
   int _currentSeekValue=1;
   int _duration=1;
   AudioPlayer player = AudioPlayer();
+  bool mustSeek = false; //The podcast must keep seeking until the user lifts their hands
 
 @override
   /*AudioControlState(String _nowPlaying,String _url,bool playing,AudioPlayer player){
@@ -35,12 +36,7 @@ class AudioControlState extends State<AudioControl> {
     this.player = player;
   }*/
 
-  Dispose() {
-    this.player.dispose();
-  }
-
   void statify(String nP, String url, String desc){
-   // Dispose();
     _nowPlaying = nP;
     _url = url;
     _description = desc;
@@ -50,6 +46,28 @@ class AudioControlState extends State<AudioControl> {
       playPauseButton = Icons.pause;
     else
       playPauseButton = Icons.play_arrow;
+  }
+
+  void seekPodcast(bool isForwards) async {
+    if (isForwards) {
+      if (_currentSeekValue * 1000 + 20000 > _duration*1000) // Can not skip ahead of the duration of the podcast
+        return;
+
+      int result = await player.seek(
+          Duration(milliseconds: _currentSeekValue * 1000 + 20000));
+    }else {
+      if (_currentSeekValue * 1000 - 20000 < .1 ) //Must be greater than 0.1
+        return;
+
+        int result = await player.seek(
+            Duration(milliseconds: _currentSeekValue * 1000 - 20000));
+    }
+  }
+
+  void continousSeek(bool isForwards){
+    while(mustSeek){
+      seekPodcast(isForwards);
+    }
   }
 
   void initState() {
@@ -88,6 +106,7 @@ class AudioControlState extends State<AudioControl> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -120,16 +139,16 @@ class AudioControlState extends State<AudioControl> {
                 ),
               )
           ),
-          // Slider( // The seek bar for playback
-          //   min: 0,
-          //   max: 200,
-          //   value: 100,
-          //   activeColor: Colors.white,
-          //   inactiveColor: Colors.grey,
-          //   onChanged: (double value) {
-          //     setState( () => {} );
-          //   },
-          // ),
+          /*Slider( // The seek bar for playback
+            min: 0,
+            max: 200,
+            value: 100,
+            activeColor: Colors.white,
+            inactiveColor: Colors.grey,
+            onChanged: (double value) {
+              setState( () => {} );
+            },
+          ),*/
           Row( // Button controls for the player
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -152,7 +171,7 @@ class AudioControlState extends State<AudioControl> {
                     Icons.arrow_back_ios_outlined,
                     color: Colors.white,
                   ),
-                  // onPressed: () => _showToast("previous")
+                  onPressed: () => seekPodcast(false)
                 ),),
               ),
               CircleAvatar( // Play/Pause button
@@ -176,7 +195,8 @@ class AudioControlState extends State<AudioControl> {
                     Icons.arrow_forward_ios_outlined,
                     color: Colors.white,
                   ),
-                  onPressed: () => widget.next(),
+                  onPressed: () => seekPodcast(true),
+                  enableFeedback: true,
                 ),),
               ),
             ],

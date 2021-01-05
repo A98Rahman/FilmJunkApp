@@ -27,6 +27,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
+
   // MediaControls mediaControl;
   FeedData Selection;
   AudioControl audioControl;
@@ -39,7 +40,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
-    CURR_IDX=0;
+    CURR_IDX = 0;
     // audioControl = new AudioControl("Nothing Selected", "", false);
     // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
     // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
@@ -79,104 +80,121 @@ class _PodcastFeedState extends State<PodcastFeed> {
       color: Colors.white,
       child: ListView.separated(
         itemCount: feed.length,
-        separatorBuilder: (BuildContext context, int itemCount) => Divider(height: 1),
+        separatorBuilder: (BuildContext context, int itemCount) =>
+            Divider(height: 1),
         itemBuilder: (BuildContext context, int itemCount) {
-            return _buildRow(
-                feed[itemCount].title,
-                feed[itemCount].url,
-                feed[itemCount].description,
-                DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime),itemCount
-            );
+          return _buildRow(
+              feed[itemCount].title,
+              feed[itemCount].url,
+              feed[itemCount].description,
+              DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime),
+              itemCount
+          );
         },
       ),
     );
   }
 
-  // Build and return the list item
-  Widget _buildRow(String title, String url, String desc, String pubDate, int index) {
-    final rssDesc = parse(desc);
-    final String parsedDesc = parse(rssDesc.body.text).documentElement.text;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 4.0
-      ),
-      color: basicTheme().backgroundColor,
-      child: ListTile(
-        title: Text('Podcast $title'),
-        subtitle: Text('Published: $pubDate'),
-        trailing: new IconButton(
-          icon: new Icon(Icons.info_outline),
-          onPressed: () => _showPodcastInfo(title, parsedDesc),
-        ),
-        onTap: () => _selectToPlay('$url','$title','$parsedDesc',index),
-      ),
-    );
-  } // _buildRow
 
   _showPodcastInfo(String infoTitle, String infoDescription) {
     return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(infoTitle),
-          content: SingleChildScrollView(
-            child: Text(infoDescription),
-          ),
-        );
-      }
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(infoTitle),
+            content: SingleChildScrollView(
+              child: Text(infoDescription),
+            ),
+          );
+        }
     );
   }
 
   // Update the podcast playing
   void _selectToPlay(String guid, String title, String desc, int index) {
     setState(() {
-          CURR_IDX = index;
-        _key.currentState.statify(title, guid,desc);
+      CURR_IDX = index;
+      _key.currentState.statify(title, guid, desc);
+      _nowPlaying = title;
+      _currentSeekValue = 0;
+      _description = desc;
+      // setState(() {
+      //audioControl.Dispose();
+      //audioControl = null;
+      // audioControl = new AudioControl(title, guid, true);
+
+      _key.currentState.statify(title, guid, desc);
+      // });
+
     });
   }
 
-  nextPodcast(){
-    bool isNext = true;
-    if(list == null || list.isEmpty)
-      return;
+  // Build and return the list item
+  Widget _buildRow(String title, String guid, String desc, String pubDate,
+      int index) {
+    final rssDesc = parse(desc);
+    final String parsedDesc = parse(rssDesc.body.text).documentElement.text;
 
-    if(isNext){
-      if (CURR_IDX+1 > list.length){
+      return Container(
+        padding: EdgeInsets.symmetric(
+            vertical: 4.0
+        ),
+        color: basicTheme().backgroundColor,
+        child: ListTile(
+          title: Text('Podcast $title'),
+          subtitle: Text('Published: $pubDate'),
+          trailing: new IconButton(
+            icon: new Icon(Icons.info_outline),
+            onPressed: () => _showPodcastInfo(title, parsedDesc),
+          ),
+          onTap: () => _selectToPlay('$guid', '$title', '$parsedDesc', index),
+        ),
+      );
+    } // _buildRow
+
+
+    nextPodcast() {
+      bool isNext = true;
+      if (list == null || list.isEmpty)
         return;
-      }else {
-        CURR_IDX++;
+
+      if (isNext) {
+        if (CURR_IDX + 1 > list.length) {
+          return;
+        } else {
+          CURR_IDX++;
+        }
+      } else {
+        if (CURR_IDX - 1 < 0) {
+          return;
+        } else {
+          CURR_IDX--;
+        }
       }
-    }else {
-      if (CURR_IDX-1 < 0){
-        return;
-      }else {
-        CURR_IDX--;
-      }
+      _selectToPlay(
+          list[CURR_IDX].url, list[CURR_IDX].title, list[CURR_IDX].description,
+          CURR_IDX);
     }
-    _selectToPlay(list[CURR_IDX].url, list[CURR_IDX].title, list[CURR_IDX].description, CURR_IDX);
-
-  }
 
 
-  // Toast functionality
-  void _showToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.grey,
-      textColor: Colors.white,
-      fontSize: 16,
-    );
-  } // _showToast
+    // Toast functionality
+    void _showToast(String message) {
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    } // _showToast
 
 
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
+    @override
+    Widget build(BuildContext context) {
+      return DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
@@ -198,7 +216,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
                 tooltip: 'Patreon Feed',
               ),
             ],
-            bottom: TabBar (
+            bottom: TabBar(
               tabs: <Widget>[
                 Tab(
                   text: 'Feed',
@@ -210,7 +228,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
               indicatorColor: basicTheme().accentColor,
             ),
           ),
-          body: TabBarView (
+          body: TabBarView(
             children: [
               Column(
                 children: <Widget>[
@@ -239,18 +257,17 @@ class _PodcastFeedState extends State<PodcastFeed> {
                     AudioControl(
                       key: _key,
                       next: nextPodcast,
-                      prev: nextPodcast,
                     ),
                   ]
               ),
             ],
           ),
         ),
-    );
-    // throw UnimplementedError();
+      );
+      // throw UnimplementedError();
+    }
   }
 
-}
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;
