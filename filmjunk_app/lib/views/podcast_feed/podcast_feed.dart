@@ -267,7 +267,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
       // throw UnimplementedError();
     }
   }
-  
+
 
 class FeedSearch extends SearchDelegate<FeedData> {
   var feeditems;
