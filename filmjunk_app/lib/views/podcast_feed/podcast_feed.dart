@@ -41,6 +41,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
     print('');
     feedList = _refresh();
     CURR_IDX = 0;
+    loadCurrentSelection();
     // audioControl = new AudioControl("Nothing Selected", "", false);
     // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
     // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
@@ -111,20 +112,48 @@ class _PodcastFeedState extends State<PodcastFeed> {
     );
   }
 
+  saveCurrentSelection(String title, String url, String desc) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('curr_title',
+        title);
+    await prefs.setString('curr_url',
+        url);
+    await prefs.setString('curr_desc',
+        desc);
+  }
+  //load podcast from shared preferences, if it exists.
+  loadCurrentSelection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currTitle = (prefs.get('curr_title') ?? ""); //null check
+    if (currTitle == "") {
+      return;
+    }
+    String currUrl = (prefs.get('curr_url') ?? ""); //null check
+    if (currTitle == "") {
+      return;
+    }
+    String currDesc = (prefs.get('curr_desc') ?? ""); //null check
+    if (currTitle == "") {
+      return;
+    }
+
+    //If we reach to this mark then we can assume that all the data is present in shared prefs
+
+    _selectToPlay(currUrl, currTitle, currDesc, 0);
+
+  }
+
   // Update the podcast playing
-  void _selectToPlay(String guid, String title, String desc, int index) {
+  void _selectToPlay(String url, String title, String desc, int index) {
     setState(() {
       CURR_IDX = index;
-      _key.currentState.statify(title, guid, desc);
+      _key.currentState.statify(title, url, desc);
       _nowPlaying = title;
       _currentSeekValue = 0;
       _description = desc;
-      // setState(() {
-      //audioControl.Dispose();
-      //audioControl = null;
-      // audioControl = new AudioControl(title, guid, true);
 
-      _key.currentState.statify(title, guid, desc);
+      saveCurrentSelection(title,url,desc);
+      _key.currentState.statify(title, url, desc);
       // });
 
     });
