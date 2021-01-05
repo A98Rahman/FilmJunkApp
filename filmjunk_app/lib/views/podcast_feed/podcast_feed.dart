@@ -17,7 +17,7 @@ class PodcastFeed extends StatefulWidget {
   _PodcastFeedState createState() => _PodcastFeedState();
 }
 
-class _PodcastFeedState extends State<PodcastFeed> {
+class _PodcastFeedState extends State<PodcastFeed> with AutomaticKeepAliveClientMixin<PodcastFeed> {
   String _nowPlaying = '<No podcast selected>';
   String _url = "";
   String _description = "";
@@ -27,6 +27,9 @@ class _PodcastFeedState extends State<PodcastFeed> {
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
+
+  @override
+  bool get wantKeepAlive => true;
 
   // MediaControls mediaControl;
   FeedData Selection;
@@ -237,7 +240,10 @@ class _PodcastFeedState extends State<PodcastFeed> {
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (!snapshot.hasData)
-                        return Center(child: CircularProgressIndicator());
+                        return Center(child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ));
                       List items = snapshot.data;
                       return new Flexible(
                         fit: FlexFit.loose,

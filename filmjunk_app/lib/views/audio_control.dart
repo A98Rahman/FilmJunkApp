@@ -17,6 +17,9 @@ class AudioControl extends StatefulWidget {
 
 class AudioControlState extends State<AudioControl> {
 
+  static final int SHORTSKIP = 20000;
+  static final int LONGSKIP = 60000;
+
   bool playing = false;
   IconData playPauseButton;
   String _nowPlaying = '<No podcast selected>';
@@ -47,25 +50,19 @@ class AudioControlState extends State<AudioControl> {
       playPauseButton = Icons.play_arrow;
   }
 
-  void seekPodcast(bool isForwards) async {
+  void seekPodcast(bool isForwards, int timeSkip) async {
     if (isForwards) {
-      if (_currentSeekValue * 1000 + 20000 > _duration*1000) // Can not skip ahead of the duration of the podcast
+      if (_currentSeekValue * 1000 + timeSkip > _duration*1000) // Can not skip ahead of the duration of the podcast
         return;
 
       int result = await player.seek(
-          Duration(milliseconds: _currentSeekValue * 1000 + 20000));
+          Duration(milliseconds: _currentSeekValue * 1000 + timeSkip));
     }else {
-      if (_currentSeekValue * 1000 - 20000 < .1 ) //Must be greater than 0.1
+      if (_currentSeekValue * 1000 - timeSkip < .1 ) //Must be greater than 0.1
         return;
 
         int result = await player.seek(
-            Duration(milliseconds: _currentSeekValue * 1000 - 20000));
-    }
-  }
-
-  void continousSeek(bool isForwards){
-    while(mustSeek){
-      seekPodcast(isForwards);
+            Duration(milliseconds: _currentSeekValue * 1000 - timeSkip));
     }
   }
 
@@ -128,12 +125,13 @@ class AudioControlState extends State<AudioControl> {
           ),
           Center(
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(12.0),
                 child: LinearPercentIndicator(
                   backgroundColor: Colors.white,
                   progressColor: basicTheme().accentColor,
-                  width: MediaQuery.of(context).size.width *(6/7),
-                  lineHeight: 5,
+                  width: MediaQuery.of(context).size.width *(3/4),
+                  lineHeight: 10,
+                  alignment: MainAxisAlignment.center,
                   percent: _currentSeekValue/_duration,
                 ),
               )
@@ -154,49 +152,109 @@ class AudioControlState extends State<AudioControl> {
               CircleAvatar( // Previous button
                 backgroundColor: basicTheme().accentColor,
                 radius: 20,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: Colors.white,
+                child: Center(
+                  child: ClipOval(
+                      child: Material(
+                          elevation: 8.0,
+                          color: basicTheme().accentColor,
+                          child: InkWell(
+                            splashColor: Colors.tealAccent,
+                            child: SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: Icon(
+                                Icons.info_outline,
+                                color: Colors.white,
+                              ),
+                            ),
+                            onTap: () => _showPodcastInfo(_nowPlaying,_description),
+                          )
+                      )
                   ),
-                  onPressed: () => _showPodcastInfo(_nowPlaying,_description),
-                ),),
+                ),
+                // child: Center(
+                //   child: IconButton(
+                //   icon: Icon(
+                //     Icons.info_outline,
+                //     color: Colors.white,
+                //   ),
+                //   onPressed: () => _showPodcastInfo(_nowPlaying,_description),
+                // ),
+                // ),
               ),
               CircleAvatar( // Previous button
                 radius: 20,
                 backgroundColor: basicTheme().accentColor,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_outlined,
-                    color: Colors.white,
+                child: Center(
+                  child: ClipOval(
+                      child: Material(
+                          elevation: 8.0,
+                          color: basicTheme().accentColor,
+                          child: InkWell(
+                            splashColor: Colors.tealAccent,
+                            child: SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: Icon(
+                                  Icons.fast_rewind,
+                                  color: Colors.white
+                              ),
+                            ),
+                            onTap: () => seekPodcast(false,SHORTSKIP),
+                            onLongPress: () => seekPodcast(false,LONGSKIP),
+                          )
+                      )
                   ),
-                  onPressed: () => seekPodcast(false)
-                ),),
+                )
               ),
               CircleAvatar( // Play/Pause button
                 backgroundColor: basicTheme().accentColor,
                 radius: 30,
                 child: Center(
-                    child: IconButton(
-                        icon: Icon(
-                            playPauseButton
-                        ),
-                        onPressed: () => _playToggle(),
-                      color: Colors.white,
-                    )
+                  child: ClipOval(
+                      child: Material(
+                          elevation: 8.0,
+                          color: basicTheme().accentColor,
+                          child: InkWell(
+                            splashColor: Colors.tealAccent,
+                            child: SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: Icon(
+                                  playPauseButton,
+                                  color: Colors.white
+                              ),
+                            ),
+                            onTap: () => _playToggle(),
+                          )
+                      )
+                  ),
                 ),
               ),
               CircleAvatar(
                 backgroundColor: basicTheme().accentColor,
                 radius: 20,
-                child: Center(child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    color: Colors.white,
+                child: Center(
+                  child: ClipOval(
+                      child: Material(
+                          elevation: 8.0,
+                          color: basicTheme().accentColor,
+                          child: InkWell(
+                            splashColor: Colors.tealAccent,
+                            child: SizedBox(
+                              width: 100,
+                              height: 100,
+                              child: Icon(
+                                  Icons.fast_forward,
+                                  color: Colors.white
+                              ),
+                            ),
+                            onTap: () => seekPodcast(true,SHORTSKIP),
+                            onLongPress: () => seekPodcast(true,LONGSKIP),
+                          )
+                      )
                   ),
-                  onPressed: () => seekPodcast(true),
-                  enableFeedback: true,
-                ),),
+                ),
               ),
             ],
           ),
