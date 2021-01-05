@@ -6,25 +6,14 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:filmjunk_app/global_settings.dart';
 
 class AudioControl extends StatefulWidget {
+
+  final Function next;
+  // final Function prev;
+
+  AudioControl({Key key, this.next/*, this.prev*/}) : super(key: key);
+
   @override
-  String _nP; //now plaiyng
-  String _url;
-  bool p; //playing
-
-  final Function func;
-  /*Dispose() {
-    this.player.dispose();
-  }*/
-
-  // AudioControl(this._nP, this._url, this.p);
-  // AudioControl(String _nP, String _url, bool p) {
-  //   this._nP = _nP;
-  //   this._url = _url;
-  //   this.p = p;
-  // }
-  AudioControl({Key key, this.func}) : super(key: key);
-
-  AudioControlState createState() => AudioControlState(/*_nP, _url, p, player*/);
+  AudioControlState createState() => AudioControlState();
 }
 
 class AudioControlState extends State<AudioControl> {
@@ -37,6 +26,7 @@ class AudioControlState extends State<AudioControl> {
   int _duration=1;
   AudioPlayer player = AudioPlayer();
 
+
 @override
   /*AudioControlState(String _nowPlaying,String _url,bool playing,AudioPlayer player){
     this._nowPlaying = _nowPlaying;
@@ -45,7 +35,12 @@ class AudioControlState extends State<AudioControl> {
     this.player = player;
   }*/
 
+  Dispose() {
+    this.player.dispose();
+  }
+
   void statify(String nP, String url){
+   // Dispose();
     _nowPlaying = nP;
     _url = url;
     playing = true;
@@ -112,13 +107,13 @@ class AudioControlState extends State<AudioControl> {
               color: Colors.white,
               fontSize: 20,
             ),
-          ),Center(child:
+          ),/*,Center(child:
           new LinearPercentIndicator(
             width: MediaQuery.of(context).size.width *(6/7),
             lineHeight: 5,
             percent: _currentSeekValue/_duration,
-          )),
-          /*Slider( // The seek bar for playback
+          )),*/
+          Slider( // The seek bar for playback
             min: 0,
             max: 200,
             value: 100,
@@ -127,7 +122,7 @@ class AudioControlState extends State<AudioControl> {
             onChanged: (double value) {
               setState( () => {} );
             },
-          ),*/
+          ),
           Row( // Button controls for the player
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -138,7 +133,7 @@ class AudioControlState extends State<AudioControl> {
                     Icons.info_outline,
                     color: Colors.white,
                   ),
-                  // onPressed: () => _showToast("previous")
+                  // onPressed: () => widget.prev()
                 ),),
               ),
               CircleAvatar( // Previous button
@@ -166,7 +161,7 @@ class AudioControlState extends State<AudioControl> {
                     Icons.arrow_forward_ios_outlined,
                     color: Colors.white,
                   ),
-                  // onPressed: () => _showToast("next")
+                  onPressed: () => widget.next(),
                 ),),
               ),
             ],
