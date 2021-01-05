@@ -30,12 +30,14 @@ class _PodcastFeedState extends State<PodcastFeed> {
   FeedData Selection;
   AudioControl audioControl;
 
+  GlobalKey<AudioControlState> _key = GlobalKey();
+
   void initState() {
     super.initState();
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
-    audioControl = AudioControl("Nothing Selected", "", false);
+    // audioControl = new AudioControl("Nothing Selected", "", false);
     // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
     // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
   }
@@ -111,11 +113,13 @@ class _PodcastFeedState extends State<PodcastFeed> {
     setState(() {
       _nowPlaying = title;
       _currentSeekValue = 0;
-      setState(() {
-        audioControl.Dispose();
-        audioControl = null;
-        audioControl = new AudioControl(title, guid, true);
-      });
+      // setState(() {
+        //audioControl.Dispose();
+        //audioControl = null;
+        // audioControl = new AudioControl(title, guid, true);
+
+        _key.currentState.statify(title, guid);
+      // });
 
     });
   }
@@ -198,7 +202,9 @@ class _PodcastFeedState extends State<PodcastFeed> {
             children: [
               Wrap(
                   children: <Widget>[
-                    audioControl
+                    AudioControl(
+                      key: _key,
+                    ),
                   ]
               ),
             ],

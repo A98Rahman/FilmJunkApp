@@ -10,21 +10,24 @@ class AudioControl extends StatefulWidget {
   String _nP; //now plaiyng
   String _url;
   bool p; //playing
-  AudioPlayer player = AudioPlayer();
 
-  Dispose() {
+  final Function func;
+  /*Dispose() {
     this.player.dispose();
-  }
+  }*/
 
-  AudioControl(this._nP, this._url, this.p);
+  // AudioControl(this._nP, this._url, this.p);
   // AudioControl(String _nP, String _url, bool p) {
-    // _AudioControlState createState() =>
-        // _AudioControlState(_nP, _url, p, player);
+  //   this._nP = _nP;
+  //   this._url = _url;
+  //   this.p = p;
   // }
-  _AudioControlState createState() => _AudioControlState(_nP, _url, p, player);
+  AudioControl({Key key, this.func}) : super(key: key);
+
+  AudioControlState createState() => AudioControlState(/*_nP, _url, p, player*/);
 }
 
-class _AudioControlState extends State<AudioControl> {
+class AudioControlState extends State<AudioControl> {
 
   bool playing = false;
   IconData playPauseButton;
@@ -32,28 +35,36 @@ class _AudioControlState extends State<AudioControl> {
   String _url;
   int _currentSeekValue=1;
   int _duration=1;
-  AudioPlayer player;
+  AudioPlayer player = AudioPlayer();
 
-  _AudioControlState(String _nowPlaying,String _url,bool playing,AudioPlayer player){
+@override
+  /*AudioControlState(String _nowPlaying,String _url,bool playing,AudioPlayer player){
     this._nowPlaying = _nowPlaying;
     this._url = _url;
     this.playing = playing;
     this.player = player;
+  }*/
 
-
-
+  void statify(String nP, String url){
+    _nowPlaying = nP;
+    _url = url;
+    playing = true;
+    play();
+    if(playing)
+      playPauseButton = Icons.pause;
+    else
+      playPauseButton = Icons.play_arrow;
   }
 
   void initState() {
     super.initState();
     UrlConstants.isConnected(context);
     print('');
-    play();
-
     if(playing)
       playPauseButton = Icons.pause;
     else
       playPauseButton = Icons.play_arrow;
+    // play();
   }
 
 
@@ -168,14 +179,16 @@ class _AudioControlState extends State<AudioControl> {
   void _playToggle() {
     if (playing) {
       setState(() {
-        playPauseButton = Icons.pause;
+        playPauseButton = Icons.play_arrow;
         playing = false;
+        player.pause();
       });
     }
     else {
       setState(() {
-        playPauseButton = Icons.play_arrow;
+        playPauseButton = Icons.pause;
         playing = true;
+        player.resume();
       });
     }
   }
