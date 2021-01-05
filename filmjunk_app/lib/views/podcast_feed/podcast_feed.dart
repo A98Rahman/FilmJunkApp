@@ -30,6 +30,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
   // MediaControls mediaControl;
   FeedData Selection;
   AudioControl audioControl;
+  int CURR_IDX; //Index of the currently playing podcast.
 
   GlobalKey<AudioControlState> _key = GlobalKey();
 
@@ -38,6 +39,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
+    CURR_IDX=0;
     // audioControl = new AudioControl("Nothing Selected", "", false);
     // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
     // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
@@ -83,15 +85,15 @@ class _PodcastFeedState extends State<PodcastFeed> {
                 feed[itemCount].title,
                 feed[itemCount].url,
                 feed[itemCount].description,
-                DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime)
+                DateFormat('yyyy-MM-dd').format(feed[itemCount].datetime),itemCount
             );
         },
       ),
     );
   }
-  
+
   // Build and return the list item
-  Widget _buildRow(String title, String guid, String desc, String pubDate) {
+  Widget _buildRow(String title, String url, String desc, String pubDate, int index) {
     final rssDesc = parse(desc);
     final String parsedDesc = parse(rssDesc.body.text).documentElement.text;
     return Container(
@@ -106,7 +108,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
           icon: new Icon(Icons.info_outline),
           onPressed: () => _showPodcastInfo(title, parsedDesc),
         ),
-        onTap: () => _selectToPlay('$guid','$title','$parsedDesc'),
+        onTap: () => _selectToPlay('$url','$title','$parsedDesc',index),
       ),
     );
   } // _buildRow
@@ -127,20 +129,33 @@ class _PodcastFeedState extends State<PodcastFeed> {
   }
 
   // Update the podcast playing
-  void _selectToPlay(String guid, String title, String desc) {
+  void _selectToPlay(String guid, String title, String desc, int index) {
     setState(() {
-      _nowPlaying = title;
-      _currentSeekValue = 0;
-      _description = desc;
-      // setState(() {
-        //audioControl.Dispose();
-        //audioControl = null;
-        // audioControl = new AudioControl(title, guid, true);
-
-        _key.currentState.statify(title, guid, desc);
-      // });
-
+          CURR_IDX = index;
+        _key.currentState.statify(title, guid,desc);
     });
+  }
+
+  nextPodcast(){
+    bool isNext = true;
+    if(list == null || list.isEmpty)
+      return;
+
+    if(isNext){
+      if (CURR_IDX+1 > list.length){
+        return;
+      }else {
+        CURR_IDX++;
+      }
+    }else {
+      if (CURR_IDX-1 < 0){
+        return;
+      }else {
+        CURR_IDX--;
+      }
+    }
+    _selectToPlay(list[CURR_IDX].url, list[CURR_IDX].title, list[CURR_IDX].description, CURR_IDX);
+
   }
 
 
@@ -223,6 +238,8 @@ class _PodcastFeedState extends State<PodcastFeed> {
                   children: <Widget>[
                     AudioControl(
                       key: _key,
+                      next: nextPodcast,
+                      prev: nextPodcast,
                     ),
                   ]
               ),

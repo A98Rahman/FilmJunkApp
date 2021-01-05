@@ -13,7 +13,7 @@ class FeedData {
   FeedData.from(RssItem item){
     guid = item.guid;
     title = item.title;
-    url = item.link;
+    url = item.enclosure.url;
     description = item.description;
     datetime = item.pubDate;
   }
