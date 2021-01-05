@@ -8,9 +8,8 @@ import 'package:filmjunk_app/global_settings.dart';
 class AudioControl extends StatefulWidget {
 
   final Function next;
-  // final Function prev;
 
-  AudioControl({Key key, this.next/*, this.prev*/}) : super(key: key);
+  AudioControl({Key key, this.next}) : super(key: key);
 
   @override
   AudioControlState createState() => AudioControlState();

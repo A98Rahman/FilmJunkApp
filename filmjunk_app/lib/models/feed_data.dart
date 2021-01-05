@@ -13,7 +13,10 @@ class FeedData {
   FeedData.from(RssItem item){
     guid = item.guid;
     title = item.title;
-    url = item.enclosure.url;
+
+    if(item.enclosure != null) //For the back episodes entry, this is supposed to be null.
+      url = item.enclosure.url;
+
     description = item.description;
     datetime = item.pubDate;
   }
