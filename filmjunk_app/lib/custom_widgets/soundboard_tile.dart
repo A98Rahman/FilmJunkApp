@@ -24,7 +24,7 @@ class SoundboardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start, //This is where we set up the dimensions of the returning widget.
         mainAxisSize: MainAxisSize.min,
@@ -37,8 +37,8 @@ class SoundboardTile extends StatelessWidget {
                 child: InkWell(
                   splashColor: Colors.tealAccent,
                   child: SizedBox(
-                    width: 56,
-                    height: 56,
+                    width: 50,
+                    height: 50,
                     child: Icon(Icons.multitrack_audio),
                   ),
                   onTap: () {play();},

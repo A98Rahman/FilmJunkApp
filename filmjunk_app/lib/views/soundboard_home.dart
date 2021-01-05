@@ -94,10 +94,6 @@ class _SoundboardHomeState extends State<SoundboardHome> with AutomaticKeepAlive
                   );
                 }
             );
-            // Flexible(
-            // fit: FlexFit.loose,
-            // child: _buildSoundBoard(items),
-            // );
           } ,
         ),
         ]));

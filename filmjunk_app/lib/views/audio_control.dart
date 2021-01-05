@@ -17,8 +17,8 @@ class AudioControl extends StatefulWidget {
 
 class AudioControlState extends State<AudioControl> {
 
-  static final int SHORTSKIP = 20000;
-  static final int LONGSKIP = 60000;
+  static final int SHORTSKIP = 20000; //Skips ahead for 20 seconds.
+  static final int LONGSKIP = 5*60000; //Skips ahead for 5 minutes.
 
   bool playing = false;
   IconData playPauseButton;
@@ -31,12 +31,6 @@ class AudioControlState extends State<AudioControl> {
   bool mustSeek = false; //The podcast must keep seeking until the user lifts their hands
 
 @override
-  /*AudioControlState(String _nowPlaying,String _url,bool playing,AudioPlayer player){
-    this._nowPlaying = _nowPlaying;
-    this._url = _url;
-    this.playing = playing;
-    this.player = player;
-  }*/
 
   void statify(String nP, String url, String desc){
     _nowPlaying = nP;
@@ -94,9 +88,6 @@ class AudioControlState extends State<AudioControl> {
         setState(() => _duration = d.inSeconds);
       });
 
-      // _duration = await player.getDuration(); //Get the duration of the podcast.
-      // print("////////////////////////////////////////// DURATION: " + _duration.toString());
-
     }else {
 
     }
@@ -136,17 +127,7 @@ class AudioControlState extends State<AudioControl> {
                 ),
               )
           ),
-          /*Slider( // The seek bar for playback
-            min: 0,
-            max: 200,
-            value: 100,
-            activeColor: Colors.white,
-            inactiveColor: Colors.grey,
-            onChanged: (double value) {
-              setState( () => {} );
-            },
-          ),*/
-          Row( // Button controls for the player
+           Row( // Button controls for the player
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CircleAvatar( // Previous button
@@ -172,15 +153,6 @@ class AudioControlState extends State<AudioControl> {
                       )
                   ),
                 ),
-                // child: Center(
-                //   child: IconButton(
-                //   icon: Icon(
-                //     Icons.info_outline,
-                //     color: Colors.white,
-                //   ),
-                //   onPressed: () => _showPodcastInfo(_nowPlaying,_description),
-                // ),
-                // ),
               ),
               CircleAvatar( // Previous button
                 radius: 20,
