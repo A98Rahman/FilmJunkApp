@@ -18,12 +18,7 @@ class PodcastFeed extends StatefulWidget {
 }
 
 class _PodcastFeedState extends State<PodcastFeed> with AutomaticKeepAliveClientMixin<PodcastFeed> {
-  String _nowPlaying = '<No podcast selected>';
-  String _url = "";
-  String _description = "";
   IconData playPauseIcon = Icons.play_arrow;
-  bool _isPlay = false;
-  int _currentSeekValue = 0;
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
@@ -44,10 +39,7 @@ class _PodcastFeedState extends State<PodcastFeed> with AutomaticKeepAliveClient
     print('');
     feedList = _refresh();
     CURR_IDX = 0;
-    loadCurrentSelection();
-    // audioControl = new AudioControl("Nothing Selected", "", false);
-    // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
-    // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
+    loadCurrentSelection(); // Load the podcast played int he previous session
   }
 
   _refresh() async {
@@ -151,13 +143,8 @@ class _PodcastFeedState extends State<PodcastFeed> with AutomaticKeepAliveClient
     setState(() {
       CURR_IDX = index;
       _key.currentState.statify(title, url, desc);
-      _nowPlaying = title;
-      _currentSeekValue = 0;
-      _description = desc;
-
-      saveCurrentSelection(title,url,desc);
-      _key.currentState.statify(title, url, desc);
-      // });
+      saveCurrentSelection(title,url,desc); //Save the seelction in shared preferences
+      // _key.currentState.statify(title, url, desc);
 
     });
   }
@@ -310,6 +297,11 @@ class FeedSearch extends SearchDelegate<FeedData> {
   FeedSearch(this.feeditems, this.func);
 
   @override
+  ThemeData appBarTheme(BuildContext context) {
+    return Theme.of(context);
+  }
+
+  @override
   List<Widget> buildActions(BuildContext context) {
     return [IconButton(
         icon: Icon(Icons.clear),
@@ -357,7 +349,6 @@ class FeedSearch extends SearchDelegate<FeedData> {
                 Navigator.pop(context);
               }))
               .toList()
-
       ),
     );
   }
