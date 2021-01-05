@@ -26,14 +26,18 @@ class _PodcastFeedState extends State<PodcastFeed> {
   Future feedList;
   List<FeedData> list;
   FeedApi api = FeedApi();
-  MediaControls mediaControl;
+  // MediaControls mediaControl;
+  FeedData Selection;
+  AudioControl audioControl;
 
   void initState() {
     super.initState();
     UrlConstants.isConnected(context);
     print('');
     feedList = _refresh();
-    mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
+    audioControl = AudioControl("Nothing Selected", "", false);
+    // Selection = FeedData("null", "No podcast Selected", "null", "No Selection", null);
+    // mediaControl = MediaControls(_nowPlaying, _url, _description, false, 0);
   }
 
   _refresh() async {
@@ -107,9 +111,11 @@ class _PodcastFeedState extends State<PodcastFeed> {
     setState(() {
       _nowPlaying = title;
       _currentSeekValue = 0;
-      mediaControl.Dispose();
-      mediaControl = null;
-      mediaControl = MediaControls(title, guid, desc, true, 0);
+      setState(() {
+        audioControl.Dispose();
+        audioControl = null;
+        audioControl = new AudioControl(title, guid, true);
+      });
 
     });
   }
@@ -192,7 +198,7 @@ class _PodcastFeedState extends State<PodcastFeed> {
             children: [
               Wrap(
                   children: <Widget>[
-                    AudioControl()
+                    audioControl
                   ]
               ),
             ],

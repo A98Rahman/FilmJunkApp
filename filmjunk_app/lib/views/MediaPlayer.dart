@@ -52,7 +52,7 @@ class MediaControls extends StatefulWidget {
       this._isPlay = isPlay;
       this.player = player;
       if(_isPlay)
-          playPauseIcon = Icons.play_arrow;
+          playPauseIcon = Icons.pause;
 
       play();
     }
