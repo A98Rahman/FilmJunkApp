@@ -10,11 +10,13 @@ class SoundboardHome extends StatefulWidget {
   _SoundboardHomeState createState() => _SoundboardHomeState();
 }
 
-class _SoundboardHomeState extends State<SoundboardHome> {
+class _SoundboardHomeState extends State<SoundboardHome> with AutomaticKeepAliveClientMixin<SoundboardHome> {
   Future soundboard;
   List<SoundboardData> list;
   SoundboardApi api = SoundboardApi();
 
+  @override
+  bool get wantKeepAlive => true;
 
   void initState() {
     super.initState();
