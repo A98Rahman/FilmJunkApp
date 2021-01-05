@@ -88,6 +88,10 @@ class AudioControlState extends State<AudioControl> {
         setState(() => _duration = d.inSeconds);
       });
 
+      player.onPlayerCompletion.listen((event) {  //On complete event of the Audio PLayer, Plays the next podcast when current compeletes
+          widget.next();
+      });
+
     }else {
 
     }
