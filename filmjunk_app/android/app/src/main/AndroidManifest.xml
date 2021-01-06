@@ -9,7 +9,7 @@
     <uses-sdk tools:overrideLibrary="xyz.luan.audioplayers"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="filmjunk_app"
+        android:label="Film Junk"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity
@@ -17,6 +17,7 @@
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:screenOrientation="portrait"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
